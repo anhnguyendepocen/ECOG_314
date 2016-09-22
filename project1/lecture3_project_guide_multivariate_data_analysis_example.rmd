@@ -504,14 +504,9 @@ group.variance
 
 <br>
 
-### Between-groups Variance and Within-groups Variations
-This following shows how we can calculate the within-groups and between-groups variation (e.g., within-group variation for a particular chemical's concentration) <br>
-<img src="images/anova_test.png" alt="Z1 Icon" width="640" height="640" align="center">
-<br>
-<hr noshading width="75%">
-<br>
-* To tackle this problem, lets look at a smaller toy dataset
-
+### Toy dataset 
+Most times it is better doing the exploratory work using a smaller dataset and then use the code written on your big dataset.  An example is shown below:
+ <br>
 <img src="images/toy_dataset.png" alt="Z1 Icon" width="640" height="640" align="center">
 ```{r}
 toy.data <- read.table(header = TRUE, text = "
@@ -546,15 +541,15 @@ p  # display plot
 p <- p + geom_jitter(width = 0.2, aes(colour = v1), size=2)   #add points
 p   # display plot
 
-# beautify plot
-p <- p + theme(
-         legend.position = c(1.01, 0.19), legend.justification=c(1,1),     #position the legend
-        legend.position = "bottom", legend.justification=c(1,1),           #position the legend
-          legend.text = element_text(size=6.5))                           #format legend text
-
-#plot
-windows()
-p          
+# # beautify plot
+# p <- p + theme(
+#          legend.position = c(1.01, 0.19), legend.justification=c(1,1),     #position the legend
+#         legend.position = "bottom", legend.justification=c(1,1),           #position the legend
+#           legend.text = element_text(size=6.5))                           #format legend text
+# 
+# #plot
+# windows()
+# p          
 
 ```
 
@@ -601,64 +596,10 @@ descriptive.stats <- data.frame(
        "Maximum" = c(toy.table$max)
  )
 
-```
-
-
-##### Analysis of Variance (ANOVA) Table
-
-```{r}
 #--
-#Anova
-#--
-#SSW
-SSW.v1  <- sum( ( toy.df$v2[ 1: 6] - toy.table$mean[1] )^2 )
-SSW.v2  <- sum( ( toy.df$v2[ 7:12] - toy.table$mean[2] )^2 )
-SSW.v3  <- sum( ( toy.df$v2[13:18] - toy.table$mean[3] )^2 )
-SSW <-SSW.v1  + SSW.v2  + SSW.v3 
-
-
-#SST
-SST.v1  <- sum( ( toy.df$v2[ 1: 6] - x_2bar )^2 )
-SST.v2  <- sum( ( toy.df$v2[ 7:12] - x_2bar )^2 )
-SST.v3  <- sum( ( toy.df$v2[13:18] - x_2bar )^2 )
-SST <-SST.v1  + SST.v2  + SST.v3 
-
-#SSB + SSW = SST
-SSB.v1  <- sum( 6 * ( toy.table$mean[1] - x_2bar )^2 )
-SSB.v2  <- sum( 6 * ( toy.table$mean[2] - x_2bar )^2 )
-SSB.v3  <- sum( 6 * ( toy.table$mean[3] - x_2bar )^2 )
-SSB <-SSB.v1  + SSB.v2  + SSB.v3 
-
-F  = ( SSB / ( K - 1) ) / ( SSW / (N - K) ) 
-
-anova.table <- data.frame("sum of squares"=c(SSB, SSW, SSW), 
-                          df = c(K-1, N-K, N-1), 
-                          "mean square" = c(SSB/(K-1), SSW/(N-K), SST/(N-1)),
-                          F = c(F, 0, 0)
-                          )
-```
-
-##### Show descriptive statistics and ANOVA table
-* Output from SPSS (Analyze -> Compare means->ANOVA
-
-```{r}
+#show table
 descriptive.stats 
 
-# Show ANOVA Table
-anova.table
-
-##
-        
-
 ```
-
-
-##### Next we compare with critical value from table
-
-<img src="images/anova.png" alt="Z1 Icon" width="640" height="640" align="center">
-<br>
-<hr noshading width="75%">
-
-<br>
 
 ### We will extend this to out wine dataset in out next lecture
