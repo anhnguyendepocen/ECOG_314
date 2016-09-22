@@ -15,23 +15,24 @@
   * Transform variables using the dplyr package, handle missing values, rename variables, keep and drop variables, remove duplicate observations, create summarized or aggregated datasets.
   * Export your dataset to some other format (CSV,JSON).
   * *Homework 2 assigned*.
-* **(Sept. 16) R Programming**
+* **(Sept. 16) Descriptive Statistics and Exploratory Data Analysis (EDA) in R**
+  * Calculating summary statistics (min, max, mean, median, quantiles, skewness).  Centering, normalizing and scaling data.
+  * EDA graphs (`histogram()`, `boxplot()`, `densityplot()`, `qqnorm()`).
+  * Test for continuous variables (test for normality, student’s t test, equal variances test, non-parametric tests), P-values, confidence interval estimation, power of a test.
+  * *Homework 3 assigned*.
+* **(Sept. 23) R Programming**
   * Sequences and simple loops (iteration), conditional execution.
   * Writing functions, specifying function arguments and output, writing for loops, and testing variable scope.
   * Implement functions for selected descriptive statistics.
-  * *Homework 3 assigned*.
-* **(Sept. 23) Generating Data** 
+  * *Homework 4 assigned*.
+* **(Sept. 30) Generating Data** 
   * Generate numeric sequences, factors, repetitious patterns, text to create filenames, and simple loops (iteration).
   * Generate random data and simulate data that satisfy specific constraints.
   * Sample data and compute statistics.
   * Large dataset considerations.
   * Manage R dataset, files and workspace. 
-  * *Homework 4 assigned*.
-* **(Sept. 30) Descriptive Statistics and Exploratory Data Analysis (EDA) in R**
-  * Calculating summary statistics (min, max, mean, median, quantiles, skewness).  Centering, normalizing and scaling data.
-  * EDA graphs (`histogram()`, `boxplot()`, `densityplot()`, `qqnorm()`).
-  * Test for continuous variables (test for normality, student’s t test, equal variances test, non-parametric tests), P-values, confidence interval estimation, power of a test.
   * *Homework 5 assigned*.
+
   
 #### (Oct. 7) Project 1: Midterm Project Presentation
 
