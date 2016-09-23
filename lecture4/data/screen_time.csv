@@ -1,0 +1,73 @@
+"name","title","minutes","cameo","codename","is_avenger"
+"tony stark","iron man",77.25,0,"iron man",1
+"tony stark","the incredible hulk",0.5,0,"iron man",1
+"tony stark","iron man 2",61.25,0,"iron man",1
+"tony stark","the avengers",32.25,0,"iron man",1
+"tony stark","iron man 3",62.25,0,"iron man",1
+"tony stark","avengers: age of ultron",27.25,0,"iron man",1
+"tony stark","captain america: civil war",33.75,0,"iron man",1
+"captain america","captain america: the first avenger",56.5,0,"captain america",1
+"captain america","the avengers",28.25,0,"captain america",1
+"captain america","captain america: the winter soldier",59.9833333333333,0,"captain america",1
+"captain america","avengers: age of ultron",21.75,0,"captain america",1
+"captain america","ant-man",0.25,1,"captain america",1
+"captain america","captain america: civil war",36.6,0,"captain america",1
+"thor","thor",43.25,0,"thor",1
+"thor","the avengers",18.3,0,"thor",1
+"thor","thor: the dark world",35.5833333333333,0,"thor",1
+"thor","avengers: age of ultron",13.25,0,"thor",1
+"bruce banner","the incredible hulk",51.75,0,"hulk",1
+"bruce banner","the avengers",22.25,0,"hulk",1
+"bruce banner","iron man 3",0.75,1,"hulk",1
+"bruce banner","avengers: age of ultron",20.3333333333333,0,"hulk",1
+"natasha romanoff","iron man 2",9.25,0,"black widow",1
+"natasha romanoff","the avengers",24.75,0,"black widow",1
+"natasha romanoff","captain america: the winter soldier",24.75,0,"black widow",1
+"natasha romanoff","avengers: age of ultron",18.3,0,"black widow",1
+"natasha romanoff","captain america: civil war",11.75,0,"black widow",1
+"pepper potts","iron man",23.25,0,"pepper potts",0
+"pepper potts","iron man 2",17.5,0,"pepper potts",0
+"pepper potts","the avengers",4.5,0,"pepper potts",0
+"pepper potts","iron man 3",18.3,0,"pepper potts",0
+"loki","thor",21.25,0,"loki",0
+"loki","the avengers",21.5,0,"loki",0
+"loki","thor: the dark world",17.5,0,"loki",0
+"scott lang","ant-man",50.5,0,"scott lang",0
+"scott lang","captain america: civil war",4.75,0,"scott lang",0
+"star-lord","guardians of the galaxy",46.75,0,"star-lord",0
+"jane foster","thor",21.35,0,"jane foster",0
+"jane foster","thor: the dark world",25.4166666666667,0,"jane foster",0
+"james rhodes","iron man",8.25,0,"james rhodes",0
+"james rhodes","iron man 2",18.75,0,"james rhodes",0
+"james rhodes","iron man 3",9.75,0,"james rhodes",0
+"james rhodes","avengers: age of ultron",2.5,0,"james rhodes",0
+"james rhodes","captain america: civil war",6.1,0,"james rhodes",0
+"nick fury","iron man",0.25,1,"nick fury",0
+"nick fury","iron man 2",5.5,0,"nick fury",0
+"nick fury","thor",0.75,1,"nick fury",0
+"nick fury","captain america: the first avenger",0.5,0,"nick fury",0
+"nick fury","the avengers",18.25,0,"nick fury",0
+"nick fury","captain america: the winter soldier",15.5,0,"nick fury",0
+"nick fury","avengers: age of ultron",3.05,0,"nick fury",0
+"winter soldier","captain america: the first avenger",8.13333333333333,0,"winter soldier",0
+"winter soldier","captain america: the winter soldier",13.25,0,"winter soldier",0
+"winter soldier","ant-man",0.25,1,"winter soldier",0
+"winter soldier","captain america: civil war",21.35,0,"winter soldier",0
+"clint barton","thor",0.5,1,"hawkeye",1
+"clint barton","the avengers",12.75,0,"hawkeye",1
+"clint barton","avengers: age of ultron",15.25,0,"hawkeye",1
+"clint barton","captain america: civil war",4.75,0,"hawkeye",1
+"gamora","guardians of the galaxy",31.5166666666667,0,"gamora",0
+"sam wilson","captain america: the winter soldier",14.25,0,"sam wilson",0
+"sam wilson","avengers: age of ultron",0.75,0,"sam wilson",0
+"sam wilson","ant-man",2.03333333333333,0,"sam wilson",0
+"sam wilson","captain america: civil war",10.5,0,"sam wilson",0
+"betty ross","the incredible hulk",27.45,0,"betty ross",0
+"hank pym","ant-man",24.25,0,"hank pym",0
+"erik selvig","thor",13.75,0,"erik selvig",0
+"erik selvig","the avengers",3.05,0,"erik selvig",0
+"erik selvig","thor: the dark world",6.5,0,"erik selvig",0
+"erik selvig","avengers: age of ultron",0.75,0,"erik selvig",0
+"wanda maximoff","captain america: the winter soldier",0.25,1,"wanda maximoff",0
+"wanda maximoff","avengers: age of ultron",12.2,0,"wanda maximoff",0
+"wanda maximoff","captain america: civil war",10.1666666666667,0,"wanda maximoff",0

@@ -1,0 +1,552 @@
+---
+title: "Exploring Data, Continued"
+author: "Damian Thomas"
+date: '2016-09-23'
+output: github_document                 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Welcome & Setup
+
+1. Log in to network 
+2. Update course materials from github
+    * https://github.com/wampeh1/ECOG_314
+3. Open lecture file in RStudio
+    * Lecture4.Rmd
+
+***
+## Homework 
+
+* Feedback
+
+***
+## Recap Lecture 3
+
+### Rstudio Interface 
+
+Four panels and a menu
+
+* Inputs
+* Outputs
+* Options
+
+
+### Managing Your Rstudio Session 
+
+* Workspace (R environment): Save, Clear, and re-load
+* R Session: restart, set working directory
+* Customize appearance and behavior
+    
+
+*In Class Exercise: Practice managing Rstudio session*
+
+
+### R Object types
+
+* Vectors: one dimension, one type 
+* Lists: one dimension, many types 
+* Matrices: two dimensions, one type 
+* Data Frames: two dimensions, many types 
+
+### R syntax
+
+* Object
+* Function
+* Subsetting
+
+### R Syntax Examples - Object creation
+
+* Vectors as column variables
+* Data frames as collections of variables
+* Lists as single observations
+* Data frames as stacks of observations
+
+### R Syntax Examples - Object subsetting
+
+* The Bracket "[" - subset vectors and data frames by index or element name
+* The Double Bracket "[[" - subset list by index or element name
+* The Dollar "$" - subset data frame by variable name, list by element name
+
+### R Syntax Examples - Expressions and Functions
+
+* The Paren "(" - group expressions and evaluate
+* The Brace "{" - encapsulate one or more expressions into a separate block of code
+
+#### The Function
+
+* Do things with objects using functions
+* Hoe to define a new function
+* \*Everything\* is function or an object
+
+
+### Reading Data
+
+* Various formats
+
+### Viewing Data
+
+* RStudio windows: environment, etc.
+* Console: print(), str(), etc.
+
+
+### Getting help
+
+* Cookbook R: [http://www.cookbook-r.com/Data_input_and_output/Loading_data_from_a_file/](http://www.cookbook-r.com/Data_input_and_output/Loading_data_from_a_file/) - recipes for common tasks
+* Datacamp Tutorials: [https://www.datacamp.com/community/tutorials/importing-data-r-part-two](https://www.datacamp.com/community/tutorials/importing-data-r-part-two) 
+* Stack Overflow: [http://stackoverflow.com/questions/tagged/r](http://stackoverflow.com/questions/tagged/r) - searchable Q&A 
+* R Bloggers: [https://www.r-bloggers.com/read-excel-files-from-r/](https://www.r-bloggers.com/read-excel-files-from-r/) - brief posts with examples, links to other sites
+* [google](http://www.google.com) - is your friend
+
+
+### Running Code 
+
+1. One line of code 
+2. Multiple lines of code 
+3. Entire program 
+4. Markdown documents 
+
+## Practice Running Code
+
+*In Class Exercises: Practice Running Code*
+
+* hello.R
+
+* hello.Rmd
+
+
+***
+
+# Lecture 4: Exploring Data 
+
+
+
+## Data Set Categories
+
+Data sets fall into 3 major categories:  
+
+* *cross sectional*
+* *time series*
+* *panel or longitudinal*
+
+#### Cross Sectional Data
+
+A single measure (or set of measures) observed from multiple entities at the same point in time.
+
+> "Cross-sectional data, or a cross section of a study population, in statistics and econometrics is a type of data collected by observing many subjects (such as individuals, firms, countries, or regions) at the same point of time, or without regard to differences in time. Analysis of cross-sectional data usually consists of comparing the differences among the subjects." 
+
+*- [Wikipedia, 2016-09-15](https://en.wikipedia.org/wiki/Cross-sectional_data)*
+
+
+#### Time series Data
+
+A single measure, or set of measures, observed at different points in time. 
+
+> "Most commonly, a ***time series*** is a sequence taken at successive equally spaced points in time. Thus it is a sequence of discrete-time data. Examples of time series are heights of ocean tides, counts of sunspots, and the daily closing value of the Dow Jones Industrial Average" 
+
+*- Source [Wikipedia, 2016-09-15](https://en.wikipedia.org/wiki/Time_series)*
+
+
+#### Panel Data
+
+Cross sectional data from multiple points in time
+
+> "In statistics and econometrics, the term panel data refers to multi-dimensional data frequently involving measurements over time. Panel data contain observations of multiple phenomena obtained over multiple time periods for the same firms or individuals. In biostatistics, the term longitudinal data is often used instead, wherein a subject or cluster constitutes a panel member or individual in a longitudinal study. Time series and cross-sectional data can be thought of as special cases of panel data that are in one dimension only (one panel member or individual for the former, one time point for the latter)."
+
+* - Source: [Wikipedia, 2016-03-30](https://en.wikipedia.org/wiki/Panel_data)*
+
+
+
+## Analysis Workflow 
+
+```{r get_image, echo=FALSE}
+dir.create("images", showWarnings = FALSE)
+if ( !file.exists("images/data-science.png") ) download.file("http://r4ds.had.co.nz/diagrams/data-science.png", "images/data-science.png", mode = "wb", method = "wget")
+```
+
+![](images/data-science.png) 
+
+(Image source: [R for Data Science](http://r4ds.had.co.nz/))
+
+This framework is useful for organizing our efforts. In this session we will practice importing data, cleaning data, and transforming it to help us answer (and generate) questions with plots.
+
+We will carry out the following tasks
+
+* Import data
+* Compute summary statistics
+* Transform and create new variables
+* Subset observations conditionally
+* Compute aggregates 
+* Compute aggregates for subsets of observations
+* Visualize data
+    * bar graph
+    * line graph: 
+    * scatterplot
+    * boxplot
+* Merge data sets
+
+
+## Tools 
+
+We will use these functions and packages
+
+#### Base R
+
+* Import: 
+    * read.table(), and related functions
+* Aggregations: 
+    * summary()
+    * mean()
+    * median()
+    * sd() & var()
+    * min() & max
+    * sum()
+    * length()
+* Transformations
+    * ifelse()
+    * sub() & gsub()
+    * merge()
+    * subset()
+* Visualization
+    * plot()
+    * hist()
+    * etc.
+
+#### Tidyverse alternatives
+
+* dplyr
+* reshape2
+* ggplot2
+
+
+## Central Question
+
+Which marvel characters generate the most movie revenue? 
+
+The plan is to combine data from several sources and compare the characters based on a series of revenue generation measures.
+
+
+## Import Data Sets
+
+1. an avengers team roster
+2. revenue for each marvel movie
+3. time on screen
+
+
+### Avengers team roster
+
+```{r recreate_avengers_df, echo = TRUE}
+avengers <- read.csv("data/raw/avengers.csv", stringsAsFactors = FALSE)
+avengers
+str(avengers)
+```
+Source: Wikipedia ()
+
+* Each observation represents a single member of the team
+* Variables (2): team member codename, and the total number of movies in the current 
+
+
+### Movie Revenue
+
+```{r avenger_movie_info, echo = TRUE}
+movies <- read.delim("data/raw/movies.txt", sep = "|", stringsAsFactors = FALSE)
+movies
+str(movies)
+```
+Source: Wikipedia (https://en.wikipedia.org/wiki/List_of_Marvel_Cinematic_Universe_films#Box_office_performance)
+
+* Each observation represents a single movie
+* Variables (3): the name of the movie, the total revenue, and the release date
+
+
+
+### Screen time
+
+```{r screen_time_data}
+screen_time <- read.delim("data/raw/screen_time.txt", sep = "\t", header = FALSE, stringsAsFactors = FALSE)
+head(screen_time, 25)
+str(screen_time)
+```
+Source: IMDb (http://www.imdb.com/list/ls036115103/)
+
+* Each observation represents a movie appearance for a given character
+* Variables (2): character name/codename, and text with the movie title and total screen time combined
+
+***
+
+### Tidy and Transform
+
+What is the state of the data? Tidy? Ready for plotting and analysis?
+
+Not quite.
+
+* avengers data frame: tidy, needs minor adjustments
+    * Has a shared identifier: hero codename
+    * Need to reformat codename for merging
+* movies data frame: tidy, but needs some transformations to be useful
+    * The revenue and date variables are text 
+        * can't compute averages, etc.
+        * can't sort in meaningful order
+    * Need to add a shared identifier for merging 
+* screen_time data frame: Not tidy, needs a lot of work
+    * No variable names in raw data
+    * Multiple types of information contained in the second variable
+    * No shared identifier for merging
+
+
+#### Tidy and Transform: Avengers Roster
+
+* Standardize codenames
+```{r transform_avengers_df, include = TRUE, results = 'hide'}
+source("clean_avengers_data.R", echo = FALSE)
+```
+
+
+#### Tidy and Transform: Movie Revenue
+
+* Convert revenues to numeric values and change unit of measure from $1 to $1 Million
+* Capture the dates
+* Simplify titles (lowercase)
+
+```{r transform_movies, include = TRUE, results = 'hide'}
+source("clean_movies_data.R", echo = FALSE)
+```
+
+
+#### Tidy and Transform: Screen time
+
+```{r tidy_transform_scree_time, include = TRUE, results = 'hide'}
+source("clean_screen_time_data.R", echo = FALSE)
+```
+
+### Take a look at the data
+
+Before plotting or summarizing the data, make sure you know what the data look like.
+
+*** In Class Exercise ***
+
+1. Open one of the scripts in RStudio. 
+2. Run it. 
+3. Inspect the results
+    * objects created in the global environment 
+    * csv files created in the local ./data directory 
+
+### Visualize
+
+#### Visualize - Avengers roster
+
+```{r plot_avengers_df, include = TRUE, results = 'hide'}
+source("plot_avengers_data.R", echo = FALSE)
+```
+
+![](images/avengers_plot1.png)
+
+![](images/avengers_plot2.png)
+
+### Questions
+
+* How many movies have been made?  
+* Average number of movies?
+* Who has the most movies?
+
+```{r movie_questions}
+sum(avengers$movies)
+mean(avengers$movies)
+avengers[ avengers$movies == max(avengers$movies), ]
+```
+
+
+As usual, there is more than one way to get an answer.  We could use the subset function instead of the single bracket
+```{r subset_avengers_df_w_function}
+subset(avengers, avengers$movies == max(avengers$movies)) # subset with function
+```
+
+Or, we could sort the data frame in ascending order by the number of movies, then show the last 3 entries
+```{r sort_avengers_df}
+tail( avengers[ order(avengers$movies),], 3)
+```
+
+#### Answers
+
+* *How many movies have been made with the 6 primary avengers?* `r sum(avengers$movies)`
+* *Average number of movies per member?* `r mean(avengers$movies)`
+* *Who has the most movies?* It's a tie: `r avengers[ avengers$movies == max(avengers$movies), "codename"]`
+* *Which character is most successful?* Hard to tell without more data.
+
+
+#### Visualize - Movie Revenue
+
+```{r plot_movies_df, include = TRUE, results = 'hide'}
+source("plot_movies_data.R", echo = FALSE)
+```
+
+
+![](images/movies_plot3.png)
+
+![](images/movies_plot4.png)
+
+![](images/movies_plot7.png)
+
+![](images/movies_plot10.png)
+
+![](images/movies_plot11.png)
+
+
+#### Questions (movie revenues)
+
+* How many movies have been made? 
+```{r , echo = TRUE, include = FALSE}
+nrow(movies)
+```
+
+* Average revenue? 
+```{r , echo = TRUE, include = FALSE}
+round(mean(movies$revenue), digits=0)
+```
+
+* Which movie made the least? 
+```{r , echo = TRUE, include = FALSE}
+movies[ movies$revenue == min(movies$revenue), "title"]
+```
+
+* Which avenger made the most money?
+```{r }
+df <- movies
+df[is.na(movies$codename), "codename"] <- "other"
+df <- with(df,
+     
+     aggregate(revenue, by = list(codename), FUN = "sum")
+)
+names(df) <- c("codename", "total_revenue")
+df
+```
+
+Calculate with dplyr (alternative)
+
+```{r , echo = FALSE,  results = 'hide'}
+suppressMessages(library(dplyr))
+```
+
+```{r }
+movies %>% 
+    mutate(codename = ifelse(is.na(codename), "other", codename)) %>%
+    group_by(codename) %>%
+    summarise(total_revenue = sum(revenue),
+              total_appearances = n()) %>%
+    data.frame()
+```
+
+#### Answers (movies)
+
+* *How many movies have been made?`r nrow(movies)`*
+* *Total revenue? : `r round(sum(movies$revenue)/1000, digits = 1)` billion*
+* *Average revenue? `r round(mean(movies$revenue), digits=0)` million*
+* *Which movie made the least? `r movies[ movies$revenue == min(movies$revenue), "title"]`*
+
+
+
+#### Visualize - Screen Time
+
+```{r plot_screen_time_df, include = TRUE, results = 'hide'}
+source("plot_screen_time_data.R", echo = FALSE)
+```
+
+![](images/screen_time_plot1.png)
+
+![](images/screen_time_plot2.png)
+
+![](images/screen_time_plot3.png)
+
+
+***
+
+#### Summary Stats - screen time
+
+```{r }
+summary(screen_time)
+sd(screen_time$minutes)
+
+# Standard deviation for avengers
+with( subset(screen_time, screen_time$is_avenger == 1),
+      sd(minutes)
+)
+
+# average screen time for each avenger
+df <- with( subset(screen_time, screen_time$is_avenger == 1),
+      aggregate(minutes, by = list(codename), FUN = "mean")
+)
+names(df) <- c("codename", "average_minutes")
+df
+
+#  total appearances for each avenger
+df <- with( subset(screen_time, screen_time$is_avenger == 1),
+      aggregate(codename, by = list(codename), FUN = "length")
+)
+names(df) <- c("codename", "total_appearances")
+df
+```
+
+Calculate with dplyr (alternative)
+
+```{r }
+screen_time %>% 
+    
+    mutate(codename = ifelse(is.na(codename), "other", codename)) %>%
+    
+    group_by(codename) %>%
+    
+    summarise(total_minutes = sum(minutes),
+              total_appearances = n(),
+              avgerage_minutes = mean(minutes),
+              sd_minutes = sd(minutes)) %>%
+    
+    arrange(desc(total_minutes)) %>%
+    
+    data.frame()
+```
+
+## Merging
+
+merge() function
+
+Combine the movie revenue data with the screen time data. Explore how variation in revenue might be related to character screen time.
+
+
+## Homework Exercises (continued from week 3)
+
+Explore a data set
+
+1. Choose a raw data set, and download it.
+    * Advanced option: use R to download the file (not required)
+2. Import the data into R
+3. Do at least 3 data transformations, Explain your reasoning. For example:
+    * change the units 
+    * rename variables
+    * merge in additional variables 
+    * compute a new variable ( categorical label, etc.) 
+    * aggregate
+    * subset or sample 
+4. Do at least one plot
+5. Compute summary statistics 
+6. Address the following questions 
+    * Categorize the data set (e.g., panel data), describe it
+    * Provide link to the source
+    * Describe most interesting patterns (or lack thereof). E.g.: shape of distribution, time trend, seasonality, changes in volatility, extreme values, etc.
+    * Offer a future question to investigate or a next step to take
+8. Turn in your results as either
+    * an r script (.R or .r file, with text answers as code comments )
+    * an r markdown document (.Rmd or .rmd file)
+9. Bonus: include links to websites or documentation used to figure things out. Indicate what you used each for as briefly as possible. 
+***
+
+## Resources
+
+[http://tryr.codeschool.com/](http://tryr.codeschool.com/)
+
+[https://www.rstudio.com/online-learning/#R](https://www.rstudio.com/online-learning/#R)
+
+[http://adv-r.had.co.nz/](http://adv-r.had.co.nz/)
+
+[https://github.com/hadley/r4ds](https://github.com/hadley/r4ds)
