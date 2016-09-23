@@ -59,6 +59,9 @@ check_pkgs(
 ### Reference materials
 1. [This R Data Import Tutorial Is Everything You Need -- R bloggers](http://blog.datacamp.com/r-data-import-tutorial/)
 2. [Importing Data Into R - Part Two -- R bloggers](http://www.r-bloggers.com/importing-data-into-r-part-two/) <img src="images/rbloggers.png" alt="RBloggers Icon" width="128" height="128"> 
+3. [25+ more ways to bring data into R](https://www.r-bloggers.com/25-more-ways-to-bring-data-into-r/)
+4. [Financial Data Accessible from R – part II -- R bloggers](https://www.r-bloggers.com/financial-data-accessible-from-r-part-ii/)
+5. [Financial Data Accessible from R – part III -- R bloggers](https://www.r-bloggers.com/financial-data-accessible-from-r-part-iii/)
 
 <hr style="border-style: solid; border-width: 1px 1px 0; border-color: palevioletred; margin-left: auto;margin-right: auto; width: 75%;">
 
@@ -69,6 +72,11 @@ check_pkgs(
 
 ## Financial Data repositories
 * [Federal Reserve](http://www.federalreserve.gov/releases) -- <em>few clicks required</em> financial_accounts_of_the_us.png
+
+* [Quantitative Financial Modelling Framework](http://origin.rdrr.io/cran/quantmod/)
+* [FRED data documentation](https://rdrr.io/cran/quantmod/man/getSymbols.FRED.html)
+* [FRED data R doc](http://www.quantmod.com/documentation/getSymbols.FRED.html) 
+
 * [Data Market](https://datamarket.com/data/list/?q=provider:tsdl) <em>one of the user friendly Websites -- few clicks required</em> <img src="images/data_market.png" alt="Data Market Icon" width="128" height="128">
 * [INFORUM](http://inforumweb.umd.edu/econdata/econdatacontents.html) -- <em>requires Inforum's database and regression package, G, to access that data</em>
 
@@ -601,5 +609,17 @@ descriptive.stats <- data.frame(
 descriptive.stats 
 
 ```
+library(quantmod)
+
+getSymbols("DFF",src="FRED")
+
+plot(DFF)
+### Wine Quality Dataset 2
+Source:  [Wine Quality Data Set] (https://archive.ics.uci.edu/ml/datasets/Wine+Quality)
+
+### Step 1:
+Go to the data source and read about the dataset.  Look at the data dictinary and the maintainer of the dataset
+
+
 
 ### We will extend this to out wine dataset in out next lecture
