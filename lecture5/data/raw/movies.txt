@@ -1,0 +1,14 @@
+title|revenue|released
+Iron Man|$585,174,222|May 2, 2008
+The Incredible Hulk|$263,427,551|June 13, 2008
+Iron Man 2|$623,933,331|May 7, 2010
+Thor|$449,326,618|May 6, 2011
+Captain America: The First Avenger|$370,569,774|July 22, 2011
+Marvel's The Avengers|$1,519,557,910|May 4, 2012
+Iron Man 3|$1,215,439,994|May 3, 2013
+Thor: The Dark World|$644,602,516|November 8, 2013
+Captain America: The Winter Soldier|$714,421,503|April 4, 2014
+Guardians of the Galaxy|$773,312,399|August 1, 2014
+Avengers: Age of Ultron|$1,405,413,868|May 1, 2015
+Ant-Man|$519,445,163|July 17, 2015
+Captain America: Civil War|$1,152,745,930|May 6, 2016

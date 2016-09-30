@@ -1,0 +1,72 @@
+Tony Stark	* IRON MAN <77:15>
+Tony Stark	* THE INCREDIBLE HULK <:30>
+Tony Stark	* IRON MAN 2 <61:15>
+Tony Stark	* THE AVENGERS <32:15>
+Tony Stark	* IRON MAN 3 <62:15>
+Tony Stark	* AVENGERS: AGE OF ULTRON <27:15>
+Tony Stark	* CAPTAIN AMERICA: CIVIL WAR <33:45>
+Captain America	* CAPTAIN AMERICA: THE FIRST AVENGER <56:30>
+Captain America	* THE AVENGERS <28:15>
+Captain America	* CAPTAIN AMERICA: THE WINTER SOLDIER <59>
+Captain America	* AVENGERS: AGE OF ULTRON <21:45>
+Captain America	* ANT-MAN (cameo) <:15>
+Captain America	* CAPTAIN AMERICA: CIVIL WAR <36>
+Thor	* THOR <43:15>
+Thor	* THE AVENGERS <18>
+Thor	* THOR: THE DARK WORLD <35>
+Thor	* AVENGERS: AGE OF ULTRON <13:15>
+Bruce Banner	* THE INCREDIBLE HULK <51:45>
+Bruce Banner	* THE AVENGERS <22:15>
+Bruce Banner	* IRON MAN 3 (cameo) <:45>
+Bruce Banner	* AVENGERS: AGE OF ULTRON <20>
+Natasha Romanoff	* IRON MAN 2 <9:15>
+Natasha Romanoff	* THE AVENGERS <24:45>
+Natasha Romanoff	* CAPTAIN AMERICA: THE WINTER SOLDIER <24:45>
+Natasha Romanoff	* AVENGERS: AGE OF ULTRON <18>
+Natasha Romanoff	* CAPTAIN AMERICA: CIVIL WAR <11:45>
+Pepper Potts	* IRON MAN <23:15>
+Pepper Potts	* IRON MAN 2 <17:30>
+Pepper Potts	* THE AVENGERS <4:30>
+Pepper Potts	* IRON MAN 3 <18>
+Loki	* THOR <21:15>
+Loki	* THE AVENGERS <21:30>
+Loki	* THOR: THE DARK WORLD <17:30>
+Scott Lang	* ANT-MAN <50:30>
+Scott Lang	* CAPTAIN AMERICA: CIVIL WAR <4:45>
+Star-Lord	* GUARDIANS OF THE GALAXY <46:45>
+Jane Foster	* THOR <21>
+Jane Foster	* THOR: THE DARK WORLD <25>
+James Rhodes	* IRON MAN <8:15>
+James Rhodes	* IRON MAN 2 <18:45>
+James Rhodes	* IRON MAN 3 <9:45>
+James Rhodes	* AVENGERS: AGE OF ULTRON <2:30>
+James Rhodes	* CAPTAIN AMERICA: CIVIL WAR <6>
+Nick Fury	* IRON MAN (cameo) <:15>
+Nick Fury	* IRON MAN 2 <5:30>
+Nick Fury	* THOR (cameo) <:45>
+Nick Fury	* CAPTAIN AMERICA: THE FIRST AVENGER <:30>
+Nick Fury	* THE AVENGERS <18:15>
+Nick Fury	* CAPTAIN AMERICA: THE WINTER SOLDIER <15:30>
+Nick Fury	* AVENGERS: AGE OF ULTRON <3>
+Winter Soldier	* CAPTAIN AMERICA: THE FIRST AVENGER <8>
+Winter Soldier	* CAPTAIN AMERICA: THE WINTER SOLDIER <13:15>
+Winter Soldier	* ANT-MAN (cameo) <:15>
+Winter Soldier	* CAPTAIN AMERICA: CIVIL WAR <21>
+Clint Barton	* THOR (cameo) <:30>
+Clint Barton	* THE AVENGERS <12:45>
+Clint Barton	* AVENGERS: AGE OF ULTRON <15>
+Clint Barton	* CAPTAIN AMERICA: CIVIL WAR <4:45>
+Gamora	* GUARDIANS OF THE GALAXY <31>
+Sam Wilson	* CAPTAIN AMERICA: THE WINTER SOLDIER <14:15>
+Sam Wilson	* AVENGERS: AGE OF ULTRON <:45>
+Sam Wilson	* ANT-MAN <2>
+Sam Wilson	* CAPTAIN AMERICA: CIVIL WAR <10:30>
+Betty Ross	* THE INCREDIBLE HULK <27>
+Hank Pym	* ANT-MAN <24:15>
+Erik Selvig	* THOR <13:45>
+Erik Selvig	* THE AVENGERS <3>
+Erik Selvig	* THOR: THE DARK WORLD <6:30>
+Erik Selvig	* AVENGERS: AGE OF ULTRON <:45>
+Wanda Maximoff	* CAPTAIN AMERICA: THE WINTER SOLDIER (cameo) <:15>
+Wanda Maximoff	* AVENGERS: AGE OF ULTRON <12>
+Wanda Maximoff	* CAPTAIN AMERICA: CIVIL WAR <10>
