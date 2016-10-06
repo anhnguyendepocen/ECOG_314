@@ -1,0 +1,265 @@
+---
+title: "Lecture 6 - Control, functions, and navigating the OS in R"
+author: "Jeffrey Naber"
+date: "Friday, October 7, 2016"
+output: pdf_document
+---
+
+
+In this lecture, we will be exploring how to navigate through the directories on your computer, how to use R to simplify reading in these files, how to use "for", "if", and "while" statements to control the flow of your code, and how to wrap everything up in a well defined function.  To demonstrate how these ideas play out in practice, please make sure to download the "surveyData" folder.  Inside you'll find 500 files of "survey" responses from banks.  The files contain a unique bank ID, and the total dollar amounts of all deposits currently held, and all loans currently outstanding, reported weekly by each bank for all of 2015. We will use this data to study the health of the banking system, looking at how much money the banks actually hold compared to how much they have loaned out, a concept known as "leverage".  
+
+
+## Sequences and Repetitions in R
+
+There are many times you'll need to generate a simple vector of numbers in R.  The two most often forms these vectors take are a simple sequence, generated using either a colon for a simple sequence, or the seq() command for a more complex vector, or a repetivite vector generated using the rep() command.  
+```{r}
+
+1:10
+
+seq(from = 1, to = 10)
+
+rep(x = 1, times = 10)
+```
+
+Repetition is straightforard.  Sequences can be generated in more useful ways using the flags in the seq() command. 
+```{r}
+seq(from = 0, to = 100, by = 10)
+
+seq(from = 0, length = 10, by = 10)
+
+seq(as.Date("2010-01-01"), by = "month", length = 12)
+```
+
+Remember, both seq() and rep() return vectors. This means they can be assigned and manipulated like any other vector
+
+### In-Class Exercise 1
+Use the seq() command to generate a vector of every month-end date in 2010.
+
+## Navigating your computer in R
+
+First, figure out where you currently are.  In R, the command to do this is "Get Working Directory", or getwd():
+```{r}
+getwd()
+```
+
+The default directory will often not be where you saved your code and/or data.  To point R at your data, we use "Set Working Directory", or setwd().  Let's set the working directory to where you saved your bank surveys.  (Edit your own code to reflect the directory where you saved the surveys)
+
+```{r}
+setwd(".")
+getwd()
+```
+
+
+Read in and examine the first survey
+```{r}
+surveyData <- read.csv("bankSurveys/survey_001.csv")
+head(surveyData)
+```
+
+NOTE: Be careful using setwd(), as it reduces the reproducibility of your code.  Use good file managment techniques to make sure that you can re-run your code on whatever machine your code ends up on.
+
+## Control in R
+
+R has many different ways for you to control how your program executes.  The most often used are "for", "while", and "if/else".  
+
+### For loops
+
+For loops are most often used with the seq command to allow you to iterate through a data structure, or to perform more elaborate tasks than the seq command will let you.  Let's take another look at the survey data we've read in, and calculate the change in the level of deposits each day.
+
+```{r}
+surveyData$depositsDiff <- 0
+for(i in 2:nrow(surveyData)) {
+  surveyData$depositsDiff[i] <- surveyData$deposits[i] - surveyData$deposits[i - 1]
+}
+head(surveyData)
+```
+
+For loops can also be run across columns, not just down rows.  For loops can also be nested inside each other, allowing for a broader range of controls
+
+```{r}
+surveyData$depositsDiff <- 0
+surveyData$loansDiff <- 0
+for(j in 5:ncol(surveyData)) {
+  for(i in 2:nrow(surveyData)) {
+    surveyData[i, j] <- surveyData[i, j - 2] - surveyData[i - 1, j - 2]
+  }
+}
+head(surveyData)
+```
+
+### In-Class Exercise 2
+
+Using a for loop, add a column to surveyData with the percent change in loan amounts from the week prior.
+
+### While Loops
+While loops are very similar to for loops, except a for loop is executed over a pre-defined vector, but a while loop is executed until a condition is met.
+
+While loops can be very useful to generate irregular sequences, such as the Fibonnaci sequence.
+```{r}
+i <- 0
+n1 <- 0
+n2 <- 1
+
+print(n1)
+print(n2)
+
+while(i < 10) {
+  fib <- n1 + n2
+  print(fib)
+  n1 <- n2
+  n2 <- fib
+  i <- i + 1
+}
+```
+
+VERY IMPORTANT: Note that a for loop is executed over a preset vector, which means it necessarily has a finite number of iterations.  A while loop looks for a condition to be true, which means you have to be very careful to set up your while loop.  It is very easy to set up a loop where the condition is never true, and thus create a loop which will never terminate.  
+
+### Exercise 3
+Use a while loop to find the greatest number in the Fibonnaci sequence that is still less than 10000.
+
+### If/else
+If statements give you a way for your code to make choices.  The code inside an if statement is only executed if the stated condition is met.
+```{r}
+surveyData$health <- NA
+
+for(i in 1:nrow(surveyData)){
+  if(surveyData$depositsDiff[i] < 0) {
+    surveyData$health[i] <- "WARNING!"
+  }
+  if(surveyData$depositsDiff[i] >= 0) {
+    surveyData$health[i] <- "HEALTHY!"
+  }
+  
+}
+
+head(surveyData, 10)
+```
+
+Else is often used in conjuction with if statements to provide a catchall so that no data slips through the code.  Else conditions are triggered when none of the other if statements are.
+```{r}
+surveyData$health <- NA
+
+for(i in 1:nrow(surveyData)) {
+  if(surveyData$depositsDiff[i] < 0) {
+    surveyData$health[i] <- "WARNING!"
+    }
+  else if(surveyData$depositsDiff[i] > 0) {
+    surveyData$health[i] <- "HEALTHY!"
+    }
+  else{
+    surveyData$health[i] <- "NEUTRAL"
+  }
+}
+```
+
+In this case, "NEUTRAL" will be given for any values which are 0 or missing.  It's important to be aware of all possible cases that are falling under your "else" statements.
+
+### In-Class Exercise 4
+Using if and else statements, determine whether the year 2200 will be a leap year.  The rules for a leap year are:  
+Every year that is exactly divisible by four is a leap year, except for years that are exactly divisible by 100, but these centurial years are leap years if they are exactly divisible by 400.
+
+# Using list.files()
+
+Return to the bank survey data.  There are 500 files to read in.  Clearly, 500 individual "read.csv" commands would quickly turn into a nightmare.  The solution through R is the list.files() command
+
+```{r}
+head(list.files("bankSurveys/"), 10)
+tail(list.files("bankSurveys/"), 10)
+```
+
+The list.files command, as you'd expect, returns a list.  We can save this like any other list, and use it, to read in all the files in just a few, clean lines of code.  To do this, we'll need to use a "for" loop.
+
+```{r}
+setwd("bankSurveys/")
+surveyList <- list.files()
+surveyData <- read.csv("survey_001.csv")
+
+for(i in 2:length(surveyList)) {
+  surveyData <- rbind(surveyData, read.csv(surveyList[i]))
+}
+nrow(surveyData)
+```
+
+# Writing Functions
+All of the above examples are useful, but they are difficult to use flexibly.  For example, the code used to generate the Fibonnaci sequence can only generate the first 10 digits as written.  The leap year code can only look at the year 2200.  Instead of having to edit code every time we want to look at a different input, we can use arguments in our function calls.
+
+```{r}
+# Finds the first 10 terms of the fibonnaci sequence
+fibonnaci <- function(terms = 2) {
+  i <- 0
+  n1 <- 0
+  n2 <- 1
+
+  fibSequence <- c(n1, n2, rep(NA, terms - 2))
+  
+  while(i < terms) {
+    fib <- n1 + n2
+    fibSequence[i + 1] <- n1 + n2
+    n1 <- n2
+    n2 <- fib
+    i <- i + 1
+    }
+  
+  return(fibSequence)
+}
+
+fibonnaci(terms = 10)
+
+fibonnaci(terms = 15)
+```
+
+Functions can be set to use the same output methods that you're already familiar with, including write.csv, or creating charts.  Oftentimes you'll want to return a specific value, vector, or other data structure.  The "return()" command you see above is used to export data structures from a function.
+
+Now that we have the code set up as a function, we can further improve it by using if statments, along with the stop() funtion to make sure the input is a value that makes sense.
+
+```{r, error = TRUE}
+fibonnaci <- function(terms = 1) {
+  if(!is.numeric(terms)) {
+    stop("Please enter a numeric value")
+  }
+  if(round(terms) != terms) {
+    stop("Please enter a whole number")
+  }    
+  if(terms <= 0) {
+    stop("Please enter a positive value")
+  }
+  
+  i <- 0
+  n1 <- 0
+  n2 <- 1
+
+    fibSequence <- c(n1, n2, rep(NA, terms - 2))
+  
+  while(i < terms) {
+    fib <- n1 + n2
+    fibSequence[i + 1] <- n1 + n2
+    n1 <- n2
+    n2 <- fib
+    i <- i + 1
+    }
+  
+  return(fibSequence)
+}
+
+fibonnaci(terms = "A")
+
+fibonnaci(terms = 1.10)
+
+fibonnaci(terms = -10)
+
+fibonnaci(terms = 10)
+```
+
+### In-Class Exercise 6
+Convert the leap year example from before into a function that takes in a single input - the year - and returns TRUE if the input is a leap year, FALSE if it is not.
+
+## Homework
+1.  Using the bank survey data, write a function that does the following:
+*.  Reads in all 500 files.
+*.  Takes in an input of either "deposits" or "loans", and returns the mean value of deposits or loans based on that flag for each bank as either a data frame or data table.
+*.  The function should check to make sure that the input is either "deposits" or "loans", nothing else.
+
+2.  Write a second function that takes the same survey data, and calculate the total "leverage" for each week for each bank.  "Leverage" is the ratio of holdings to debt held by the bank.  This should be stored as a new column in the dataframe.
+*.  Using the new column, the function should return the mean annual leverage for each bank, as a data frame or data table.
+
+3.  Update the function from problem 2 to take in a new variable called "period".  Period is the time frame over which we want to examine the data.  It should take in "monthly", "quarterly", and "yearly" (and only those three) values as inputs.  Using if statements, update the code to return mean leverage over the appropriate time period.
