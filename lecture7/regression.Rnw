@@ -1,0 +1,328 @@
+\documentclass[10pt]{article}
+\usepackage{amssymb, amsmath, amsthm, verbatim, layout, setspace, graphicx, float, geometry}
+\usepackage{booktabs}
+
+\newcommand{\textnote}[1]{\textbf{\textit{#1}}}
+\newcommand{\code}[1]{\textbf{\textit{#1}}}
+\newcommand{\grad}{\nabla}
+
+% ------ layout ------
+
+\begin{document}
+\title{Linear Regression}
+\author{Jeremy Oldfather}
+\maketitle
+
+<<setup,echo=FALSE,message=FALSE>>=
+opts_chunk$set(fig.align="center",size="small")
+library(ggplot2)
+library(readr)
+library(dplyr)
+@
+
+\section*{Review}
+
+\subsection*{What is linear regression?}
+
+Start with a line.
+
+\begin{align}
+y &= mx + b \label{line}
+\end{align}
+
+
+We know what this looks like visually. The line crosses the y-axis at the height of $b$ (intercept) and for each unit we move left or right, we move up or down by $m$ (slope) units. For example, with $b=10$ and $m=.7$, we get the following line:
+
+<<simple_line,fig.height=3,fig.width=6>>=
+b<-10
+m<-.7
+x<-0:50
+y<-m*x + b
+qplot(x,y,geom="line")
+@
+
+Since the line has two parameters, $m$ and $b$, we could take any {\bf two} distinct points, draw a line between them, and solve for the parameters. If we only have {\bf one} point, we could draw infinitely many lines through the point.
+
+Let's take this idea to some data. I have some data on the sales of DC properties. We can conceptualize each property as a point. Here is the \code{sale\_price} and \code{living\_sqft} of the first two properties. 
+
+<<load_data,warning=FALSE,message=FALSE,cache=TRUE>>=
+# see: https://github.com/theoldfather/DC_Properties
+sales<-read_csv("~/Projects/DC_Properties/data/sales_clean.csv")
+features<-read_csv("~/Projects/DC_Properties/data/features_clean.csv")
+details<-read_csv("~/Projects/DC_Properties/data/details_clean.csv")
+@
+<<get_sales>>=
+d<-sales %>% 
+  filter(sale_price>0) %>% 
+  left_join(features,by="ssl") %>%
+  filter(!is.na(living_sqft) & living_sqft>0) %>%
+  select(sale_price,living_sqft) 
+head(d,2) %>% data.frame()
+@
+
+Plotting these two points, we get the following scatterplot.
+
+<<plot2,fig.height=3>>=
+ggplot(d[1:2,],aes(x=living_sqft,y=sale_price)) + geom_point()
+@
+
+We could draw a segment between the lines by changing \code{geom\_point()} to \code{geom\_line()}, but let's do it by finding the slope and intercept, and then plotting the line through the points.
+
+If we subscript equation \ref{line} with $i$ to represent each observation, we can write it in a condensed notation as
+
+\begin{align}
+y_i &= m x_i + b \label{line_general}
+\end{align}
+
+and then expand it for $i \in \{1,2\}$.
+
+\begin{align}
+y_1 &= m x_1 + b \\
+y_2 &= m x_2 + b
+\end{align}
+
+Solving for $m$ and $b$ we get
+
+\begin{align}
+m = \frac{y_2 - y_1}{x_2-x_1} \label{solution_slope} \\
+b = y_1 - mx_1 \label{solution_intercept}
+\end{align}
+
+<<fit_line,fig.height=3>>=
+fit_line<-function(y,x){
+  m <- (y[2]-y[1])/(x[2]-x[1])
+  b <- y[1] - m*x[1]
+  return(c(b,m))
+}
+beta<-fit_line(d$sale_price[1:2],d$living_sqft[1:2])
+ggplot(d[1:2,],aes(x=living_sqft,y=sale_price)) + 
+  geom_point() + geom_abline(intercept=beta[1],slope=beta[2])
+@
+
+Do you believe this is an accurate model of the relationship between sales price and the living area of a home? $b=\Sexpr{ beta[1] }$ implies that a house with no space would be worth \$3 million. And $m=\Sexpr{ beta[2] }$ implies that increasing the living area of a home by 1 sqft would decrease its values by \$2,008. 
+
+Thankfully, we have data on more than two homes. But what does it mean to draw a line through {\bf more than two} points? We know our model above is very bad---so not every point will fall on the same line.
+
+Here is the rest of our data plotted on log-log scale (we will talk about log-log scale later).
+
+<<scatter_all,fig.height=3,warning=FALSE>>=
+ggplot(d,aes(x=living_sqft,y=sale_price)) + 
+  geom_point(alpha=.1) + scale_y_log10() + scale_x_log10()
+@
+
+This scatterplot seems promising--it visually re-enforces our beliefs that people place more value on larger homes. But we still want to quantify these beliefs to inform decision about buying, selling, making home improvements, etc.
+
+Even though there is not a single line that can pass through each point, we can still find an "average line" that best-fits the data. This is the essence of regression.
+
+\subsection*{Simple Linear Regression}
+
+Let's expand our general formula for a line above (Equation \ref{line_general}) to express the fact that our line does not fit exactly, but rather has some error involved. 
+
+\begin{align}
+y_i &= mx_i + b + \epsilon_i
+\end{align}
+
+The error term, the epsilon ($\epsilon_i$), also gets a subscript $i$ because we cannot assume that the line will be the same distance (vertically) from every point. Or in other words, our model will explain some home prices better than others. 
+
+Let's also formalize the notation a bit more and replace $b$ with $\beta_0$ and $m$ with $\beta_1$. Many papers use beta ($\beta$) to represent the parameters of the model, but sometimes you will also find the intercept represented as alpha ($\alpha$). This is simply different notation and has the same meaning. 
+
+\begin{align}
+y_i &= \beta_0 + \beta_1 x_i + \epsilon_i
+\end{align}
+
+Next, we need some way of defining what it means to be the line of best-fit. What we want conceptually is the model that explains our data most accurately, and on the flip-side, the model that has the least error. So let's rewrite the equation above in terms of $\epsilon_i$, and more specifically, $\sum_i \epsilon_i$, since we are interested in explaining all house prices, not just an individual one.
+
+\begin{align}
+\sum_i \epsilon_i &= \sum_i ( y_i -  (\beta_0 + \beta_1 x_i) )
+\end{align}
+
+Minimizing $\sum_i \epsilon_i$ implies changing some values on the right-hand side to decrease the error. Which ones can we change? Once our data is collected, $y_i$ and $x_i$ are constants--the points do not move. What we can do is move the line around by changing its intercept and slope until we find just the right line where the total error is minimized. That means $\sum_i \epsilon_i$ is actually a function of $\beta_0$ and $\beta_1$.
+
+\begin{align}
+\epsilon(\beta_0, \beta_1) &= \sum_i ( y_i -  (\beta_0 + \beta_1 x_i) )
+\end{align}
+
+We also need one more adjustment. Our definition of error should only include positive values--it should be as equally bad to be a point 1 unit below the line as it is to be a point 1 unit above the line. We could take either the absolute value $|\epsilon_i|$ or we could square it, $\epsilon_i^2$. Squaring this terms allows us to take advantage of the nice mathematical properties of quadratics (curves that look like parabolas) and guarantees that the error can be minimized at some unique minimum point. This leads to the following formulation of our loss function (the function to be minimized) and is the intuition behind why it is called the \textbf{Sum of Squared Residuals (SSR)}, or sometimes also called the Residual Sum of Squares (RSS).
+
+\begin{align}
+SSR(\beta_0, \beta_1) &= \sum_i ( y_i -  (\beta_0 + \beta_1 x_i) )^2
+\end{align}
+
+We can find unique solutions for the coefficients $\beta_0$ and $\beta_1$ by taking the derivative of $SSR(\beta_0, \beta_1)$ with respect to each $\beta$, setting the derivatives equal to zero, and then solving for the coefficients. The following solutions are exactly analogous to the solutions for the intercept and slope of the line in Equations (\ref{solution_intercept}) and (\ref{solution_slope}).
+
+\begin{align}
+\beta_1 &= \frac{ \sum_i y_i x_i - \frac{\sum_i y_i \sum_i x_i}{n} }{ \sum_i x_i^2 - \frac{(\sum_i x_i)^2}{n} } \\
+\beta_0 &=  \sum_i y_i - \beta_1 \sum_i x_i 
+\end{align}
+
+This might look messy at first, but notice there are really only 4 statistics we need to compute: 
+
+\begin{align}
+\sum_i & y_i x_i \\
+\sum_i & y_i \\
+\sum_i & x_i \\
+\sum_i & x_i^2
+\end{align}
+
+Using this idea, let's write a function to estimate these betas in R. 
+
+<<def_fit_simple_lm,fig.height=3>>=
+fit_simple_lm<-function(y,x){
+  n<-length(y)
+  syx<-sum(y*x)
+  sy<-sum(y)
+  sx<-sum(x)
+  sxx<-sum(x^2)
+  b1<- (syx - sy*sx/n)/(sxx - sx^2/n)
+  b0<- (sy - b1*sx)/n
+  return(c(b0,b1))
+}
+@
+
+Now we can use our function to estimate the betas--the coefficients of our simple linear model.
+
+<<use_fit_simple_lm,fig.height=4>>=
+# find our betas
+beta<-fit_simple_lm(y=d$sale_price,x=d$living_sqft)
+# use betas to create a data frame of fitted sales prices 
+E<-data.frame(sale_price=beta[1]+beta[2]*d$living_sqft,
+                   living_sqft=d$living_sqft)
+# plot our data and the fitted line
+ggplot(d,aes(x=living_sqft,y=sale_price)) + 
+  geom_point(alpha=.1) + 
+  geom_line(data=E,colour="orange") + 
+  scale_y_log10() + scale_x_log10() 
+@
+
+The fitted line is beginning to look more intuitive and it is certainly a better model than the one constructed from two points. But why is it curved? I thought we fitted a "line"?
+
+The answer is that the order in which we apply convex/concave functions to our data and fitted model matters! We can get this right by referencing \textbf{Jensen's Inequality}, which states that when we apply a concave function (think of a hill that could "cave" in) to an expected value, its output will always be greater than or equal to the expected values of the same function applied to the input. If $f(x)$ is the concave function, the inequality is:
+
+\begin{align}
+f(E(x)) & \ge E(f(x))
+\end{align}
+
+In our case, $log(x)$ is the concave function and $E(x)$ is our fitted line, $\hat{y}_i = \beta_0 + \beta_1 x_i$. We can visualize the difference this order of operations makes by plotting both alternatives. The \textbf{orange} line is what we plotted before, $log(E(\beta_0 + \beta_1 x_i))$, and \textbf{blue} is the model fitted on the log data, $E(log(\beta_0 + \beta_1 x_i))$.
+
+<<fit_simple_lm_log,fig.height=4,cache=FALSE>>=
+# log scale both y and x manually
+logd <- d %>% 
+  mutate(log_sale_price=log(sale_price),
+         log_living_sqft=log(living_sqft))
+# estimate betas again based on log-log model
+beta<-fit_simple_lm(y=logd$log_sale_price,x=logd$log_living_sqft)
+# E(log(x))
+E_log<-data.frame(log_sale_price=beta[1]+beta[2]*logd$log_living_sqft,
+                   log_living_sqft=logd$log_living_sqft)
+# log(E(x))
+log_E<-E %>% mutate(log_sale_price = log(sale_price),
+                    log_living_sqft = log(living_sqft))
+# plot the log-log data manually (no scale_y_log10() or scale_x_log10() )
+ggplot(logd,aes(x=log_living_sqft,y=log_sale_price)) + 
+  geom_point(alpha=.1) + 
+  geom_line(data=log_E,colour="orange") +
+  geom_line(data=E_log,colour="blue") 
+beta
+@
+
+\subsection*{Interpretting a Linear Regression}
+
+Now that we finally have the fitted line that we expected to see (the blue one), let's step back and think about how we should interpret the coefficients that parameterize it: $\beta_1 = Sexpr(beta[2])$ and $\beta_0 = Sexpr(beta[1])$.
+
+\subsubsection*{level-level}
+
+With a level-level model, we have the raw levels of variables on each side of the regression.
+
+$$ y_i = \beta_0 + \beta_1 x_i + \epsilon_i $$
+
+Since this model has the form of a line, we can interpret $\beta_1$ as the slope, $\Delta y / \Delta x$. To prove this to ourselves, we only need to take the derivative with respect to $x$.
+
+\begin{align}
+\frac{dy}{dx} &=\beta_1 \\
+\beta_1 &= \frac{dy}{dx}
+\end{align}
+
+So we read it as a 1 unit increase in $x$ leads to a $\beta_1$ unit change in $y$.
+
+\subsubsection*{log-level}
+
+A log-level model is not as intuitive, but we can apply the same analysis to arrive at an interpretation.
+
+\begin{align}
+log(y_i) &=  \beta_0 + \beta_1 x_i + \epsilon_i \\
+y_i &= e^{\beta_0 + \beta_1 x_i + \epsilon_i}
+\end{align}
+
+Taking the derivative with respect to $x$:
+
+\begin{align}
+\frac{dy}{dx} &= \beta_1 e^{\beta_0 + \beta_1 x_i + \epsilon_i} \\
+ &= \beta_1 y 
+\end{align}
+
+Solving for $\beta_1$:
+
+\begin{align}
+ \beta_1 &= \frac{dy}{dx} \frac{1}{y}
+\end{align}
+
+The \textbf{marginal effect}, $dy / dx = \beta_1 y$, implies that a change in $x$ will impact $y$ differently depending on the level of $y$. For instance, if $\beta_1 = .001$, and the current value of my home is \$100,000 and I decide to build an extension that increases its area by 200 sqft., then I would expect its change in value from the improvement to be $$.001 \cdot 100,000 \cdot 200 = 20,000$$ But if my home is currently worth \$200,000, then I expect the improvement to increase it by $$.001 \cdot 200,000 \cdot 200 = 40,000$$
+
+\subsubsection*{log-log}
+
+For a log-log model (our example for this lession), we can apply the same analysis as the previous two models. Starting from the model:
+
+\begin{align}
+log(y_i) &=  \beta_0 + \beta_1 log(x_i) + \epsilon_i \\
+y_i &= e^{\beta_0 + \beta_1 log(x_i) + \epsilon_i}
+\end{align}
+
+Taking the derivative with respect to $x$:
+
+\begin{align}
+\frac{dy}{dx} &= \beta_1 e^{\beta_0 + \beta_1 x_i + \epsilon_i} \cdot \frac{1}{x_i} \\
+ &= \beta_1 \frac{y}{x} 
+\end{align}
+
+Solving for $\beta_1$:
+
+\begin{align}
+ \beta_1 &= \frac{dy}{dx} \frac{x}{y}
+\end{align}
+
+The \textbf{marginal effect}, $dy / dx = \beta_1 y / x$, implies that a change in $x$ will impact $y$ differently depending on the level of $y$ relative to $x$. For instance, let's say $\beta_1 = .001$, the current value of my home is \$100,000, and its living area is 1000 sqft. Now if I decide to build an extension that increases its area by 200 sqft., then I would expect its change in value from the improvement to be 
+
+$$.001 \cdot 100,000 / 1000 \cdot 200 = 20$$ 
+
+But if my home is currently worth \$200,000, then I expect the improvement to increase its value by 
+
+$$.001 \cdot 200,000/1000 \cdot 200 = 40$$
+
+Since the model we have been using is in log-log form, let's interpret plug its coefficient for living area into our hypothetical home renovation scenerio.
+
+$$0.7063513 \cdot 200,000/1000 \cdot 200 = 14,127.03$$
+
+
+\subsection*{Simple Linear Regression in R }
+
+Thankfully, we do not need to 
+
+<<model>>=
+model<-sales %>% 
+  filter(sale_price>0) %>% 
+  left_join(features,by="ssl") %>%
+  left_join(select(details,-sale_price,-neighborhood),by="ssl") %>%
+  filter(!is.na(living_sqft) & living_sqft>0) %>%
+  mutate(log_sale_price=log(sale_price),
+         log_living_sqft=log(living_sqft))
+
+@
+
+
+\newpage
+
+% ----- start appendices -----
+
+\include{appendix}
+
+\end{document}

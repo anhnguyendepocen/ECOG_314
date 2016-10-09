@@ -1,0 +1,64 @@
+\section{Appendices}
+
+\subsection{Closed Form Solution for $\beta_0$ and $\beta_1$}
+
+Let's denote $SSR(\beta_0, \beta_1)$ as our loss function and call it $L(\beta_0, \beta_1)$.
+
+\begin{align}
+L(\beta_0, \beta_1) &= \sum_i ( y_i -  (\beta_0 + \beta_1 x_i) )^2
+\end{align}
+
+Take the partial derivatives of $L$ with respect to both $\beta_0$ and $\beta_1$ and set them equal to zero.
+
+\begin{align}
+\frac{\partial L}{\partial \beta_0} &= \sum_i 2( y_i - \beta_0 - \beta_1 x_i )(-1) = 0 \\
+\frac{\partial L}{\partial \beta_1} &= \sum_i 2( y_i - \beta_0 - \beta_1 x_i )(-x_i) = 0 
+\end{align}
+
+We can pull out $-2$ from the sum and divide them through without changing the meaning of either equation.
+
+\begin{align}
+ \sum_i ( y_i - \beta_0 - \beta_1 x_i ) &= 0 \\
+ \sum_i ( y_i - \beta_0 - \beta_1 x_i )(x_i) &= 0 
+\end{align}
+
+Distribute $x_i$ through the second equation.
+
+\begin{align}
+ \sum_i ( y_i - \beta_0 - \beta_1 x_i ) &= 0 \\
+ \sum_i ( y_i x_i - \beta_0 x_i - \beta_1 x_i^2 ) &= 0 
+\end{align}
+
+Distribute the sums. Notice $\sum_i \beta_0 = \beta_0 \sum_i 1 = n\beta_0$ because we have $n$ observations.
+
+\begin{align}
+ \sum_i y_i  - n \beta_0 - \beta_1 \sum_i x_i  &= 0 \\
+ \sum_i y_i x_i - \beta_0 \sum_i x_i - \beta_1 \sum_i x_i^2  &= 0 
+\end{align}
+
+Solve for $\beta_0$ in the first equation.
+
+\begin{align}
+ \beta_0   &= \frac{\sum_i y_i - \beta_1 \sum_i x_i}{n} \\
+ &= \frac{\sum_i y_i}{n} - \beta_1 \frac{\sum_i x_i}{n} 
+\end{align}
+
+Plug it into the second equation.
+
+\begin{align}
+ \sum_i y_i x_i - (\frac{\sum_i y_i}{n} - \beta_1 \frac{ \sum_i x_i}{n}) \sum_i x_i - \beta_1 \sum_i x_i^2  &= 0 
+\end{align}
+
+Solve for $\beta_1$.
+
+\begin{align}
+ \beta_1 &= \frac{ \sum_i y_i x_i - \frac{\sum_i y_i \sum_i x_i}{n} }{ \sum_i x_i x_i - \frac{\sum_i x_i \sum_i x_i}{n} } \\
+ &= \frac{ \sum_i y_i x_i - \frac{\sum_i y_i \sum_i x_i}{n} }{ \sum_i x_i^2 - \frac{ (\sum_i x_i)^2 } {n} }
+\end{align}
+
+Then written together.
+
+\begin{align}
+  \beta_1 &= \frac{ \sum_i y_i x_i - \frac{\sum_i y_i \sum_i x_i}{n} }{ \sum_i x_i^2 - \frac{ (\sum_i x_i)^2 } {n} } \\
+  \beta_0 &= \frac{\sum_i y_i}{n} - \beta_1 \frac{\sum_i x_i}{n}
+\end{align}
