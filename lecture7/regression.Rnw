@@ -31,9 +31,9 @@ y &= mx + b \label{line}
 \end{align}
 
 
-We know what this looks like visually. The line crosses the y-axis at the height of $b$ (intercept) and for each unit we move left or right, we move up or down by $m$ (slope) units. For example, with $b=10$ and $m=.7$, we get the following line:
+We know how this appears visually. The line crosses the y-axis at the height of $b$ (intercept) and for each unit we move left or right, we move up or down by $m$ (slope) units. For example, with $b=10$ and $m=.7$, we get the following line:
 
-<<simple_line,fig.height=3,fig.width=6>>=
+<<simple_line,fig.height=3,fig.width=6,dev='pdf'>>=
 b<-10
 m<-.7
 x<-0:50
@@ -62,7 +62,7 @@ head(d,2) %>% data.frame()
 
 Plotting these two points, we get the following scatterplot.
 
-<<plot2,fig.height=3>>=
+<<plot2,fig.height=3,dev='pdf'>>=
 ggplot(d[1:2,],aes(x=living_sqft,y=sale_price)) + geom_point()
 @
 
@@ -88,7 +88,7 @@ m = \frac{y_2 - y_1}{x_2-x_1} \label{solution_slope} \\
 b = y_1 - mx_1 \label{solution_intercept}
 \end{align}
 
-<<fit_line,fig.height=3>>=
+<<fit_line,fig.height=3,dev='pdf'>>=
 fit_line<-function(y,x){
   m <- (y[2]-y[1])/(x[2]-x[1])
   b <- y[1] - m*x[1]
@@ -105,7 +105,7 @@ Thankfully, we have data on more than two homes. But what does it mean to draw a
 
 Here is the rest of our data plotted on log-log scale (we will talk about log-log scale later).
 
-<<scatter_all,fig.height=3,warning=FALSE>>=
+<<scatter_all,fig.height=3,warning=FALSE,dev='pdf'>>=
 ggplot(d,aes(x=living_sqft,y=sale_price)) + 
   geom_point(alpha=.1) + scale_y_log10() + scale_x_log10()
 @
@@ -116,13 +116,13 @@ Even though there is not a single line that can pass through each point, we can 
 
 \subsection*{Simple Linear Regression}
 
-Let's expand our general formula for a line above (Equation \ref{line_general}) to express the fact that our line does not fit exactly, but rather has some error involved. 
+Let's expand our general formula for a line above (Equation \ref{line_general}) to express the fact that our line does not fit exactly, but rather has some slack distance between it and each point. 
 
 \begin{align}
 y_i &= mx_i + b + \epsilon_i
 \end{align}
 
-The error term, the epsilon ($\epsilon_i$), also gets a subscript $i$ because we cannot assume that the line will be the same distance (vertically) from every point. Or in other words, our model will explain some home prices better than others. 
+The slack or {\bf residual } term, $\epsilon_i$, also gets a subscript $i$ because we cannot assume that the line will be the same distance (vertically) from every point. Or in other words, our model will explain some home prices better than others. 
 
 Let's also formalize the notation a bit more and replace $b$ with $\beta_0$ and $m$ with $\beta_1$. Many papers use beta ($\beta$) to represent the parameters of the model, but sometimes you will also find the intercept represented as alpha ($\alpha$). This is simply different notation and has the same meaning. 
 
@@ -130,25 +130,31 @@ Let's also formalize the notation a bit more and replace $b$ with $\beta_0$ and 
 y_i &= \beta_0 + \beta_1 x_i + \epsilon_i
 \end{align}
 
-Next, we need some way of defining what it means to be the line of best-fit. What we want conceptually is the model that explains our data most accurately, and on the flip-side, the model that has the least error. So let's rewrite the equation above in terms of $\epsilon_i$, and more specifically, $\sum_i \epsilon_i$, since we are interested in explaining all house prices, not just an individual one.
+Next, we need some way of defining what it means to be the line of best-fit. What we want conceptually is the model that explains our data most accurately, and on the flip-side, the model that is the least inaccurate. Let's use the latter conceptualization and rewrite the equation above in terms of $\epsilon_i$
 
 \begin{align}
-\sum_i \epsilon_i &= \sum_i ( y_i -  (\beta_0 + \beta_1 x_i) )
+\epsilon_i &=  ( y_i -  (\beta_0 + \beta_1 x_i) )
 \end{align}
 
-Minimizing $\sum_i \epsilon_i$ implies changing some values on the right-hand side to decrease the error. Which ones can we change? Once our data is collected, $y_i$ and $x_i$ are constants--the points do not move. What we can do is move the line around by changing its intercept and slope until we find just the right line where the total error is minimized. That means $\sum_i \epsilon_i$ is actually a function of $\beta_0$ and $\beta_1$.
+But minimizing a single residual is not helpful. Residuals can be negative, so the further we shift the fitted line above our points, the more and more negative each residual will become. We could keep shifting the line higher and higher and always produce a more negative residual. What if we square the residual---$\epsilon^2_i$? Now a point that is 6 units below the fitted line will be as equally bad as a point 6 units above the line.  
 
 \begin{align}
-\epsilon(\beta_0, \beta_1) &= \sum_i ( y_i -  (\beta_0 + \beta_1 x_i) )
+\epsilon^2_i &=  ( y_i -  (\beta_0 + \beta_1 x_i) )^2
 \end{align}
 
-We also need one more adjustment. Our definition of error should only include positive values--it should be as equally bad to be a point 1 unit below the line as it is to be a point 1 unit above the line. We could take either the absolute value $|\epsilon_i|$ or we could square it, $\epsilon_i^2$. Squaring this terms allows us to take advantage of the nice mathematical properties of quadratics (curves that look like parabolas) and guarantees that the error can be minimized at some unique minimum point. This leads to the following formulation of our loss function (the function to be minimized) and is the intuition behind why it is called the \textbf{Sum of Squared Residuals (SSR)}, or sometimes also called the Residual Sum of Squares (RSS).
+And we want to consider the value of all the squared residuals as once so that each point plays a role is how our line is fit. Summing over the squared residuals leads to the following formulation:
+
+\begin{align}
+\sum_i \epsilon^2_i &=  \sum_i ( y_i -  (\beta_0 + \beta_1 x_i) )^2
+\end{align}
+
+This is the intuition behind the loss function (the function to be minimized) in simple linear regression called the \textbf{Sum of Squared Residuals (SSR)}.
 
 \begin{align}
 SSR(\beta_0, \beta_1) &= \sum_i ( y_i -  (\beta_0 + \beta_1 x_i) )^2
 \end{align}
 
-We can find unique solutions for the coefficients $\beta_0$ and $\beta_1$ by taking the derivative of $SSR(\beta_0, \beta_1)$ with respect to each $\beta$, setting the derivatives equal to zero, and then solving for the coefficients. The following solutions are exactly analogous to the solutions for the intercept and slope of the line in Equations (\ref{solution_intercept}) and (\ref{solution_slope}).
+By minimizing the SSR, we can find unique solutions for the coefficients $\beta_0$ and $\beta_1$. One way to do this is by taking the derivative of $SSR(\beta_0, \beta_1)$ with respect to each $\beta$, setting the derivatives equal to zero, and then solving for the coefficients. The following solutions are exactly analogous to the solutions for the intercept and slope of the line in Equations (\ref{solution_intercept}) and (\ref{solution_slope}).
 
 \begin{align}
 \beta_1 &= \frac{ \sum_i y_i x_i - \frac{\sum_i y_i \sum_i x_i}{n} }{ \sum_i x_i^2 - \frac{(\sum_i x_i)^2}{n} } \\
@@ -164,9 +170,9 @@ This might look messy at first, but notice there are really only 4 statistics we
 \sum_i & x_i^2
 \end{align}
 
-Using this idea, let's write a function to estimate these betas in R. 
+Using this idea, let's write a function to estimate the betas in R. 
 
-<<def_fit_simple_lm,fig.height=3>>=
+<<def_fit_simple_lm>>=
 fit_simple_lm<-function(y,x){
   n<-length(y)
   syx<-sum(y*x)
@@ -181,7 +187,7 @@ fit_simple_lm<-function(y,x){
 
 Now we can use our function to estimate the betas--the coefficients of our simple linear model.
 
-<<use_fit_simple_lm,fig.height=4>>=
+<<use_fit_simple_lm,fig.height=4,dev='pdf'>>=
 # find our betas
 beta<-fit_simple_lm(y=d$sale_price,x=d$living_sqft)
 # use betas to create a data frame of fitted sales prices 
@@ -202,9 +208,9 @@ The answer is that the order in which we apply convex/concave functions to our d
 f(E(x)) & \ge E(f(x))
 \end{align}
 
-In our case, $log(x)$ is the concave function and $E(x)$ is our fitted line, $\hat{y}_i = \beta_0 + \beta_1 x_i$. We can visualize the difference this order of operations makes by plotting both alternatives. The \textbf{orange} line is what we plotted before, $log(E(\beta_0 + \beta_1 x_i))$, and \textbf{blue} is the model fitted on the log data, $E(log(\beta_0 + \beta_1 x_i))$.
+In our case, $log(x)$ is the concave function and $E(x)$ is our fitted line, $\hat{y}_i = \beta_0 + \beta_1 x_i$. We can visualize the difference this order of operations makes by plotting both alternatives. The \textbf{orange} line is what we plotted before, $log(E(\beta_0 + \beta_1 x_i))$, and the \textbf{blue} one is the model fitted on the log data, $E(log(\beta_0 + \beta_1 x_i))$.
 
-<<fit_simple_lm_log,fig.height=4,cache=FALSE>>=
+<<fit_simple_lm_log,fig.height=4,cache=FALSE,dev='pdf'>>=
 # log scale both y and x manually
 logd <- d %>% 
   mutate(log_sale_price=log(sale_price),
@@ -227,7 +233,7 @@ beta
 
 \subsection*{Interpretting a Linear Regression}
 
-Now that we finally have the fitted line that we expected to see (the blue one), let's step back and think about how we should interpret the coefficients that parameterize it: $\beta_1 = Sexpr(beta[2])$ and $\beta_0 = Sexpr(beta[1])$.
+Now that we finally have the fitted line that we expected to see (the blue one), let's step back and think about how we should interpret the coefficients that parameterize it: $\beta_1 =$ \Sexpr{beta[2]} and $\beta_0 =$ \Sexpr{beta[1]}.
 
 \subsubsection*{level-level}
 
@@ -235,14 +241,14 @@ With a level-level model, we have the raw levels of variables on each side of th
 
 $$ y_i = \beta_0 + \beta_1 x_i + \epsilon_i $$
 
-Since this model has the form of a line, we can interpret $\beta_1$ as the slope, $\Delta y / \Delta x$. To prove this to ourselves, we only need to take the derivative with respect to $x$.
+Since this model has the form of a line, we can interpret $\beta_1$ as the slope, $\Delta y / \Delta x$. To prove this to ourselves, we only need to take the derivative of the model with respect to $x$.
 
 \begin{align}
 \frac{dy}{dx} &=\beta_1 \\
 \beta_1 &= \frac{dy}{dx}
 \end{align}
 
-So we read it as a 1 unit increase in $x$ leads to a $\beta_1$ unit change in $y$.
+So we can interpret $\beta1$ as the {\bf marginal effect} since a 1 unit increase in $x$ leads to a $\beta_1$ unit change in $y$.
 
 \subsubsection*{log-level}
 
@@ -270,14 +276,14 @@ The \textbf{marginal effect}, $dy / dx = \beta_1 y$, implies that a change in $x
 
 \subsubsection*{log-log}
 
-For a log-log model (our example for this lession), we can apply the same analysis as the previous two models. Starting from the model:
+For a log-log model (our example for this lession), we can apply the same analysis as the previous two models. Starting from the model equation:
 
 \begin{align}
 log(y_i) &=  \beta_0 + \beta_1 log(x_i) + \epsilon_i \\
 y_i &= e^{\beta_0 + \beta_1 log(x_i) + \epsilon_i}
 \end{align}
 
-Taking the derivative with respect to $x$:
+Take the derivative with respect to $x$:
 
 \begin{align}
 \frac{dy}{dx} &= \beta_1 e^{\beta_0 + \beta_1 x_i + \epsilon_i} \cdot \frac{1}{x_i} \\
@@ -298,17 +304,19 @@ But if my home is currently worth \$200,000, then I expect the improvement to in
 
 $$.001 \cdot 200,000/1000 \cdot 200 = 40$$
 
-Since the model we have been using is in log-log form, let's interpret plug its coefficient for living area into our hypothetical home renovation scenerio.
+Since the model we have been using is in log-log form, let's plug its coefficient for living area into my hypothetical home renovation scenerio.
 
 $$0.7063513 \cdot 200,000/1000 \cdot 200 = 14,127.03$$
 
 
 \subsection*{Simple Linear Regression in R }
 
-Thankfully, we do not need to 
+Thankfully, R has some built-in regression tools--we don't need to write our own each time we want to fit a model. All we need is a data frame and model formula. First, let's create the data frame.
 
-<<model>>=
-model<-sales %>% 
+<<data_model>>=
+# subset some data for a regression
+# and make sure both sale_price and living_sqft are log-scaled
+data.model<-sales %>% 
   filter(sale_price>0) %>% 
   left_join(features,by="ssl") %>%
   left_join(select(details,-sale_price,-neighborhood),by="ssl") %>%
@@ -317,6 +325,59 @@ model<-sales %>%
          log_living_sqft=log(living_sqft))
 
 @
+
+Next, let's write our model as an R formula. Our model is:
+
+$$ log(sale\_price_i) = \beta_0 + \beta_1 log(living\_sqft_i) + \epsilon_i$$
+
+In R, we simply write
+
+$$ log\_sale\_price \sim log\_living\_sqft $$
+
+Then we give both pieces of information to {\bf lm()}, R's linear model function.
+
+<<fit_lm_a>>=
+lm(log_sale_price ~ log_living_sqft, data=data.model)
+@
+
+Notice that in the formula, we do not need to specify the implicit {\bf 1} for $\beta_0$. R assumes we want an intercept by default. But we could specify this if we really want a reminder that it is there.
+
+<<fit_lm_b>>=
+lm(log_sale_price ~ 1 + log_living_sqft, data=data.model)
+@
+
+And if we wanted a model without an intercept, we could simply subtract {\bf 1} from the formula. This forces our fitted line to be drawn through the origin.
+
+<<fit_lm_c>>=
+lm(log_sale_price ~ -1 + log_living_sqft, data=data.model)
+@
+
+\subsubsection*{Summarizing the regression}
+
+The {\bf lm()} function returns an object that contains information about the regression that was run. If we do not assign the object to a variable, it will print the estimated coefficients to the screen. However, it is better to keep our results so we can summarize the regression in a paper, use the estimated coefficients for prediction, or analyze the residuals.
+
+So let's run the previous regression and assign to the variable {\bf fit}.
+
+<<fit_lm>>=
+fit<-lm(log_sale_price ~ log_living_sqft, data=data.model)
+@
+
+The fitted lm object contains too much information to print here, but you can inspect it with the {\bf str()} function or by clicking on it in your Environment panel in Rstudio. The {\bf summary()} function will print a prettier version of the results to screen, similar to the output in Stata.
+
+<<summary_fit>>=
+summary(fit)
+@
+
+And to get latex output of the table, we can use the { \bf stargazer } and print the results straight into our PDF.
+
+<<latex_fit,results='asis',message=FALSE>>=
+library(stargazer) # you will need to install this package
+stargazer(fit,type="latex",style="qje")
+@
+
+
+
+
 
 
 \newpage
