@@ -571,7 +571,7 @@ The fitted lm object contains too much information to print here, but you can in
 \end{kframe}
 \end{knitrout}
 
-To get a nice latex output of the table, we can use the { \bf stargazer } and print the results straight into our PDF.
+And to get latex output of the table, we can use the { \bf stargazer } and print the results straight into our PDF.
 
 \begin{kframe}
 \begin{alltt}
@@ -580,7 +580,7 @@ To get a nice latex output of the table, we can use the { \bf stargazer } and pr
 \end{alltt}
 \end{kframe}
 % Table created by stargazer v.5.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-% Date and time: Mon, Oct 10, 2016 - 01:35:35 PM
+% Date and time: Tue, Oct 11, 2016 - 10:08:08 PM
 \begin{table}[!htbp] \centering 
   \caption{} 
   \label{} 
@@ -610,9 +610,105 @@ F Statistic & 21,859.330$^{***}$ (df = 1; 85295) \\
 
 
 
+\subsubsection*{Extracting Model Components}
+
+As we have seen, the fit object returned by {\bf lm()} contains the information about the regression that created the object. A benefit of holding on to the object is that we can extract components from the model and analyze them and/or compare them to those from other models.
+
+\textbf{Coefficients ($\beta_k$).}  The betas of the model are stored as a named vector in the fit object and can be extracted by either explicitly referencing them,
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{fit}\hlopt{$}\hlstd{coefficients}
+\end{alltt}
+\begin{verbatim}
+##     (Intercept) log_living_sqft 
+##       7.8751859       0.7063513
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+or by applying the {\bf coef()} function to the object.
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{coef}\hlstd{(fit)}
+\end{alltt}
+\begin{verbatim}
+##     (Intercept) log_living_sqft 
+##       7.8751859       0.7063513
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\textbf{Fitted Values ($\hat{y}$).}  The fitted values, or simply $\hat{y}$, can be extracted by applying the {\bf fitted()} function to the object. 
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{rbind}\hlstd{(}\hlkwd{data.frame}\hlstd{(}\hlkwc{y}\hlstd{=data.model}\hlopt{$}\hlstd{log_sale_price,}\hlkwc{x}\hlstd{=data.model}\hlopt{$}\hlstd{log_living_sqft,}\hlkwc{label}\hlstd{=}\hlstr{"actual"}\hlstd{),}
+      \hlkwd{data.frame}\hlstd{(}\hlkwc{y}\hlstd{=}\hlkwd{fitted}\hlstd{(fit),}\hlkwc{x}\hlstd{=data.model}\hlopt{$}\hlstd{log_living_sqft,}\hlkwc{label}\hlstd{=}\hlstr{"fitted"}\hlstd{)}
+      \hlstd{)} \hlopt{%>%}
+  \hlkwd{ggplot}\hlstd{(}\hlkwd{aes}\hlstd{(x,y,}\hlkwc{group}\hlstd{=label,}\hlkwc{colour}\hlstd{=label))} \hlopt{+} \hlkwd{geom_point}\hlstd{()}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{figure/extract_fitted-1} 
+
+}
 
 
 
+\end{knitrout}
+
+From our model, $\hat{y}_i = \beta_0 + \beta_1 x_i$ and $\epsilon_i = y_i - \hat{y}_i$. So in the scatterplot above, every $\hat{y}_i$ has a corresponding $y_i$ either directly above or below it. And the residual $\epsilon_i$ is the difference between them vertically. We can check this:
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{all.equal}\hlstd{(}\hlkwd{resid}\hlstd{(fit),(data.model}\hlopt{$}\hlstd{log_sale_price} \hlopt{-} \hlkwd{fitted}\hlstd{(fit)))}
+\end{alltt}
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\textbf{Residuals ($\epsilon_i$).}  In you missed it in the last step, we can also extract the residuals, $\epsilon_i$, by applying the {\bf resid()} function to the fit object.
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{resid}\hlstd{(fit)} \hlopt{%>%} \hlkwd{summary}\hlstd{()}
+\end{alltt}
+\begin{verbatim}
+##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## -13.6200  -0.3601   0.1332   0.0000   0.4313   6.5900
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Residuals play a key role in our analysis of the goodness-of-fit of our model and will provide motivation for introducing {\bf multiple linear regression} in the next section.
+
+\subsection*{Multiple Linear Regression}
+
+\begin{knitrout}\small
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{data.frame}\hlstd{(}\hlkwc{e}\hlstd{=}\hlkwd{resid}\hlstd{(fit),}\hlkwc{g}\hlstd{=data.model}\hlopt{$}\hlstd{neighborhood)} \hlopt{%>%}
+  \hlkwd{filter}\hlstd{(g} \hlopt{%in%} \hlkwd{c}\hlstd{(}\hlstr{"FOGGY BOTTOM"}\hlstd{,}\hlstr{"ANACOSTIA"}\hlstd{,}\hlstr{"LEDROIT PARK"}\hlstd{,}\hlstr{"TAKOMA"}\hlstd{,}\hlstr{"GEORGETOWN"}\hlstd{))} \hlopt{%>%}
+  \hlkwd{ggplot}\hlstd{(}\hlkwd{aes}\hlstd{(}\hlkwc{y}\hlstd{=e,}\hlkwc{x}\hlstd{=g))} \hlopt{+} \hlkwd{geom_boxplot}\hlstd{()}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{figure/boxplot_residuals-1} 
+
+}
+
+
+
+\end{knitrout}
 
 \newpage
 

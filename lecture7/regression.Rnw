@@ -376,9 +376,52 @@ stargazer(fit,type="latex",style="qje")
 @
 
 
+\subsubsection*{Extracting Model Components}
 
+As we have seen, the fit object returned by {\bf lm()} contains the information about the regression that created the object. A benefit of holding on to the object is that we can extract components from the model and analyze them and/or compare them to those from other models.
 
+\textbf{Coefficients ($\beta_k$).}  The betas of the model are stored as a named vector in the fit object and can be extracted by either explicitly referencing them,
 
+<<extract_betas1>>=
+fit$coefficients
+@
+
+or by applying the {\bf coef()} function to the object.
+
+<<extract_betas2>>=
+coef(fit)
+@
+
+\textbf{Fitted Values ($\hat{y}$).}  The fitted values, or simply $\hat{y}$, can be extracted by applying the {\bf fitted()} function to the object. 
+
+<<extract_fitted,fig.height=3,dev='pdf'>>=
+rbind(data.frame(y=data.model$log_sale_price,x=data.model$log_living_sqft,label="actual"),
+      data.frame(y=fitted(fit),x=data.model$log_living_sqft,label="fitted")
+      ) %>%
+  ggplot(aes(x,y,group=label,colour=label)) + geom_point()
+@
+
+From our model, $\hat{y}_i = \beta_0 + \beta_1 x_i$ and $\epsilon_i = y_i - \hat{y}_i$. So in the scatterplot above, every $\hat{y}_i$ has a corresponding $y_i$ either directly above or below it. And the residual $\epsilon_i$ is the difference between them vertically. We can check this:
+
+<<check_fitted>>=
+all.equal(resid(fit),(data.model$log_sale_price - fitted(fit)))
+@
+
+\textbf{Residuals ($\epsilon_i$).}  In you missed it in the last step, we can also extract the residuals, $\epsilon_i$, by applying the {\bf resid()} function to the fit object.
+
+<<summarize_residuals,fig.height=3>>=
+resid(fit) %>% summary()
+@
+
+Residuals play a key role in our analysis of the goodness-of-fit of our model and will provide motivation for introducing {\bf multiple linear regression} in the next section.
+
+\subsection*{Multiple Linear Regression}
+
+<<boxplot_residuals,fig.height=3,dev='pdf'>>=
+data.frame(e=resid(fit),g=data.model$neighborhood) %>%
+  filter(g %in% c("FOGGY BOTTOM","ANACOSTIA","LEDROIT PARK","TAKOMA","GEORGETOWN")) %>%
+  ggplot(aes(y=e,x=g)) + geom_boxplot()
+@
 
 \newpage
 
