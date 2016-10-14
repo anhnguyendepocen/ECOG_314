@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015/Debian) (preloaded format=xelatex 2016.7.3)  11 OCT 2016 22:08
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015/Debian) (preloaded format=xelatex 2016.7.3)  14 OCT 2016 00:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -373,16 +373,21 @@ File: figure/extract_fitted-1.pdf Graphic file (type QTm)
 Package color Info: Redefining color shadecolor on input line 668.
  [13]
 Package color Info: Redefining color shadecolor on input line 681.
-Package color Info: Redefining color shadecolor on input line 697.
+Package color Info: Redefining color shadecolor on input line 708.
 File: figure/boxplot_residuals-1.pdf Graphic file (type QTm)
 
 <use  "figure/boxplot_residuals-1.pdf" > [14]
+Package color Info: Redefining color shadecolor on input line 728.
+Package color Info: Redefining color shadecolor on input line 767.
+ [15]
+Package color Info: Redefining color shadecolor on input line 822.
+ [16] [17]
 \openout2 = `appendix.aux'.
 
- (./appendix.tex [15
+ (./appendix.tex
+[18
 
-]) [16]
-(./regression.aux (./appendix.aux)) ) 
+]) [19] (./regression.aux (./appendix.aux)) ) 
 Here is how much of TeX's memory you used:
  2704 strings out of 493638
  34755 string characters out of 6146797
@@ -392,4 +397,4 @@ Here is how much of TeX's memory you used:
  1328 hyphenation exceptions out of 8191
  27i,10n,26p,571b,315s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on regression.pdf (16 pages).
+Output written on regression.pdf (19 pages).
