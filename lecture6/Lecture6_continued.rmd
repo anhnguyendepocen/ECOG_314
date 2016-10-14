@@ -1,0 +1,110 @@
+---
+title: "Lecture 6 - Continued"
+author: "Jeffrey Naber"
+date: "October 13, 2016"
+output: html_document
+---
+
+# Dates, Better than Brute Force Techniques
+
+
+## Dates in R
+
+R treats Dates as a unique data class, represented as:  "YYYY-MM-DD".  R can do most operations (that makes sense) on dates, simply as part of the basic R package.
+```{r}
+dates <- seq(as.Date("2015-01-01"), to = as.Date("2015-12-31"), by = "month")
+
+mean(dates)
+
+min(dates)
+
+max(dates)
+```
+R can convert many, many different strings into a date class using the "format" argument in as.Date:
+
+```{r}
+as.Date("1980-02-10")
+
+as.Date("19800210", format = "%Y%m%d")
+
+as.Date("10Feb80", format = "%d%b%y")
+
+as.Date("9/18/2016", format = "%m/%d/%Y")
+```
+
+Symbol  | Meaning
+------- | ---------------------------------
+%d      | Day as a number
+%a      | Abbreviated Weekday
+%A      | Unabbreviated Weekday
+%m      | Month as a number
+%b      | Abbreviated month
+%B      | Unabbreviated month
+%y      | Two-digit year
+%Y      | Four-digit year
+
+Format is both an argument and a function itself:
+
+```{r}
+Sys.Date()
+format(Sys.Date(), "%d %B %Y")
+format(Sys.Date(), "%d-%b")
+format(Sys.Date(), "%Y")
+
+paste0("carsDataSet_", format(Sys.Date(), "%Y%m%d"), ".csv")
+
+```
+R can even import from Excel, with Excel's wierd 5-digit dates.
+```{r}
+# From Windows Excel
+as.Date(30829, origin = "1899-12-30")
+
+# From iOS Excel
+as.Date(29367, origin = "1904-01-01")
+```
+
+Rather technical note:  In the case of two digit years, R (currently) assumes that years 00-68 are 2000 - 2068, and years 69-99 are 1969 - 1999.  
+
+### In Class Exercise:  
+Write a short function that reads in a date with a 2-digit year and returns just dates in the 1900s.
+
+## Brute Force as a Last Resort
+
+For loops are very useful, but they're the R equivalent of the Quadratic equation:  Yes, they work, but there's often a much, much better way to solve the problem.
+
+```{r echo = FALSE}
+# Create a data frame
+exampleData <- data.frame(date = seq(as.Date("2010-01-01"), Sys.Date(), by = "month"))
+exampleData$c1 <- runif(nrow(exampleData), 0, 500)
+exampleData$c2 <- runif(nrow(exampleData), 200, 700)
+exampleData$c3 <- runif(nrow(exampleData), 100, 300)
+```
+
+If we wanted to build a dataframe of yearly averages, we could use a for loop:
+```{r}
+head(exampleData)
+
+exampleData$year <-format(exampleData$date, "%Y")
+yearlyMeans <- data.frame(year = unique(exampleData$year), mean = NA)
+
+for(i in unique(exampleData$year)) {
+  exampleDataSubset <- exampleData[exampleData$year == i, ]
+  yearlyMeans$mean[which(yearlyMeans$year == i)] <- mean(exampleDataSubset$c1)
+}
+
+yearlyMeans
+```
+
+While this way works, it's bulky, hard to follow, and, particularly once larger dataset get involved, is memory and time intensive.
+
+```{r}
+yearlyMeansAggregate <-
+  aggregate(exampleData$c1, by = list(format(exampleData$date, "%Y")), FUN = mean)
+
+yearlyMeansAggregate
+
+```
+
+One line, easy to read, and much, much faster, especially with larger datasets.
+
+You'll run into a lot of problems when you are writing code that will look like they can be solved with a for loop.  Take a few minutes to explore StackOverflow, r-bloggers.com, and simple google searches to see if there's a function that can work instead of a loop.
