@@ -419,7 +419,7 @@ y_i &= e^{\beta_0 + \beta_1 log(x_i) + \epsilon_i}
 Take the derivative with respect to $x$:
 
 \begin{align}
-\frac{dy}{dx} &= \beta_1 e^{\beta_0 + \beta_1 x_i + \epsilon_i} \cdot \frac{1}{x_i} \\
+\frac{dy}{dx} &= \beta_1 e^{\beta_0 + \beta_1 log(x_i) + \epsilon_i} \cdot \frac{1}{x_i} \\
  &= \beta_1 \frac{y}{x} 
 \end{align}
 
@@ -576,38 +576,15 @@ And to get latex output of the table, we can use the { \bf stargazer } and print
 \begin{kframe}
 \begin{alltt}
 \hlkwd{library}\hlstd{(stargazer)} \hlcom{# you will need to install this package}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in library(stargazer): there is no package called 'stargazer'}}\begin{alltt}
 \hlkwd{stargazer}\hlstd{(fit,}\hlkwc{type}\hlstd{=}\hlstr{"latex"}\hlstd{,}\hlkwc{style}\hlstd{=}\hlstr{"qje"}\hlstd{)}
 \end{alltt}
-\end{kframe}
-% Table created by stargazer v.5.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-% Date and time: Fri, Oct 14, 2016 - 12:09:40 AM
-\begin{table}[!htbp] \centering 
-  \caption{} 
-  \label{} 
-\begin{tabular}{@{\extracolsep{5pt}}lc} 
-\\[-1.8ex]\hline 
-\hline \\[-1.8ex] 
-\\[-1.8ex] & log\_sale\_price \\ 
-\hline \\[-1.8ex] 
- log\_living\_sqft & 0.706$^{***}$ \\ 
-  & (0.005) \\ 
-  & \\ 
- Constant & 7.875$^{***}$ \\ 
-  & (0.034) \\ 
-  & \\ 
-\textit{N} & 85,297 \\ 
-R$^{2}$ & 0.204 \\ 
-Adjusted R$^{2}$ & 0.204 \\ 
-Residual Std. Error & 0.720 (df = 85295) \\ 
-F Statistic & 21,859.330$^{***}$ (df = 1; 85295) \\ 
-\hline 
-\hline \\[-1.8ex] 
-\textit{Notes:} & \multicolumn{1}{r}{$^{***}$Significant at the 1 percent level.} \\ 
- & \multicolumn{1}{r}{$^{**}$Significant at the 5 percent level.} \\ 
- & \multicolumn{1}{r}{$^{*}$Significant at the 10 percent level.} \\ 
-\end{tabular} 
-\end{table} 
 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): could not find function "{}stargazer"{}}}\end{kframe}
 
 
 \subsubsection*{Extracting Model Components}
