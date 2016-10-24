@@ -1,0 +1,65 @@
+Fips,Area,2010
+0,United States,14859772
+1000,Alabama,176221
+2000,Alaska,54220
+4000,Arizona,247333
+5000,Arkansas,104929
+6000,California,1960935
+8000,Colorado,258148
+9000,Connecticut,230357
+10000,Delaware,57674
+11000,District of Columbia,104044
+12000,Florida,729761
+13000,Georgia,407999
+15000,Hawaii,67539
+16000,Idaho,55420
+17000,Illinois,653164
+18000,Indiana,283111
+19000,Iowa,141382
+20000,Kansas,128589
+21000,Kentucky,165787
+22000,Louisiana,231372
+23000,Maine,51304
+24000,Maryland,314471
+25000,Massachusetts,399270
+26000,Michigan,387167
+27000,Minnesota,271481
+28000,Mississippi,94954
+29000,Missouri,255631
+30000,Montana,37801
+31000,Nebraska,91498
+32000,Nevada,119771
+33000,New Hampshire,62679
+34000,New Jersey,492990
+35000,New Mexico,86195
+36000,New York,1208079
+37000,North Carolina,417375
+38000,North Dakota,36033
+39000,Ohio,494736
+40000,Oklahoma,151318
+41000,Oregon,191393
+42000,Pennsylvania,588276
+44000,Rhode Island,49329
+45000,South Carolina,165237
+46000,South Dakota,38044
+47000,Tennessee,254343
+48000,Texas,1251494
+49000,Utah,119037
+50000,Vermont,26406
+51000,Virginia,423506
+53000,Washington,362114
+54000,West Virginia,66961
+55000,Wisconsin,253801
+56000,Wyoming,39093
+91000,New England,819346
+92000,Mideast,2765534
+93000,Great Lakes,2071979
+94000,Plains,962658
+95000,Southeast,3238444
+96000,Southwest,1736339
+97000,Rocky Mountain,509500
+98000,Far West,2755971
+Legend / Footnotes:,,
+Note-- NAICS Industry detail is based on the 2007 North American Industry Classification System (NAICS).,,
+Note-- Per capita real GDP statistics for 1997-2015 reflect Census Bureau midyear population estimates for 1997-2014 available as of December 2014.  Population estimates for 2015 are derived from the quarterly state population estimates produced by BEA based on unpublished Census Bureau data.,,
+"Last updated: June 14, 2016 -- revised statistics for 2008-2014 (estimates in current dollars), 1997-2014 (estimates in chained [2009] dollars); new advance statistics for 2015.",,
