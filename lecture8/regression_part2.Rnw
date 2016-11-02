@@ -9,7 +9,7 @@
 % ------ layout ------
 
 \begin{document}
-\title{Linear Regression}
+\title{Linear Regression: Part 2}
 \author{Jeremy Oldfather}
 \maketitle
 
@@ -21,7 +21,7 @@ library(dplyr)
 @
 
 
-<<catchup,warning=FALSE,message=FALSE,cache=TRUE>>=
+<<catchup,warning=FALSE,message=FALSE,cache=TRUE,echo=FALSE>>=
 # see: https://github.com/theoldfather/DC_Properties
 sales<-read_csv("~/Projects/DC_Properties/data/sales_clean.csv")
 features<-read_csv("~/Projects/DC_Properties/data/features_clean.csv")
@@ -65,7 +65,7 @@ fit<-lm(log_sale_price ~ log_living_sqft, data=data.model)
 @
 
 
-\subsection*{Multiple Linear Regression}
+\subsection*{Multiple Linear Regression - Last Time }
 
 When we regress $y$ on more than one independent variable, say ($x_1, x_2,...,x_k$) rather than simply ($x_1$), the regression framework is referred to as {\bf multiple linear regression}.
 
@@ -129,6 +129,8 @@ fit3<-lm(log_sale_price ~ log_living_sqft + factor(neighborhood),data=data.model
 coef(fit3)[1:2]
 summary(resid(fit3))
 @
+
+\subsection*{Multiple Linear Regression - Continuation }
 
 
 \newpage

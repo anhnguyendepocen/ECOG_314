@@ -59,61 +59,17 @@
 % ------ layout ------
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
-\title{Linear Regression}
+\title{Linear Regression: Part 2}
 \author{Jeremy Oldfather}
 \maketitle
 
 
 
 
-\begin{knitrout}\small
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlcom{# see: https://github.com/theoldfather/DC_Properties}
-\hlstd{sales}\hlkwb{<-}\hlkwd{read_csv}\hlstd{(}\hlstr{"~/Projects/DC_Properties/data/sales_clean.csv"}\hlstd{)}
-\hlstd{features}\hlkwb{<-}\hlkwd{read_csv}\hlstd{(}\hlstr{"~/Projects/DC_Properties/data/features_clean.csv"}\hlstd{)}
-\hlstd{details}\hlkwb{<-}\hlkwd{read_csv}\hlstd{(}\hlstr{"~/Projects/DC_Properties/data/details_clean.csv"}\hlstd{)}
-
-\hlstd{d}\hlkwb{<-}\hlstd{sales} \hlopt{%>%}
-  \hlkwd{filter}\hlstd{(sale_price}\hlopt{>}\hlnum{0}\hlstd{)} \hlopt{%>%}
-  \hlkwd{left_join}\hlstd{(features,}\hlkwc{by}\hlstd{=}\hlstr{"ssl"}\hlstd{)} \hlopt{%>%}
-  \hlkwd{filter}\hlstd{(}\hlopt{!}\hlkwd{is.na}\hlstd{(living_sqft)} \hlopt{&} \hlstd{living_sqft}\hlopt{>}\hlnum{0}\hlstd{)} \hlopt{%>%}
-  \hlkwd{select}\hlstd{(sale_price,living_sqft)}
-
-\hlstd{fit_line}\hlkwb{<-}\hlkwa{function}\hlstd{(}\hlkwc{y}\hlstd{,}\hlkwc{x}\hlstd{)\{}
-  \hlstd{m} \hlkwb{<-} \hlstd{(y[}\hlnum{2}\hlstd{]}\hlopt{-}\hlstd{y[}\hlnum{1}\hlstd{])}\hlopt{/}\hlstd{(x[}\hlnum{2}\hlstd{]}\hlopt{-}\hlstd{x[}\hlnum{1}\hlstd{])}
-  \hlstd{b} \hlkwb{<-} \hlstd{y[}\hlnum{1}\hlstd{]} \hlopt{-} \hlstd{m}\hlopt{*}\hlstd{x[}\hlnum{1}\hlstd{]}
-  \hlkwd{return}\hlstd{(}\hlkwd{c}\hlstd{(b,m))}
-\hlstd{\}}
-
-\hlstd{fit_simple_lm}\hlkwb{<-}\hlkwa{function}\hlstd{(}\hlkwc{y}\hlstd{,}\hlkwc{x}\hlstd{)\{}
-  \hlstd{n}\hlkwb{<-}\hlkwd{length}\hlstd{(y)}
-  \hlstd{syx}\hlkwb{<-}\hlkwd{sum}\hlstd{(y}\hlopt{*}\hlstd{x)}
-  \hlstd{sy}\hlkwb{<-}\hlkwd{sum}\hlstd{(y)}
-  \hlstd{sx}\hlkwb{<-}\hlkwd{sum}\hlstd{(x)}
-  \hlstd{sxx}\hlkwb{<-}\hlkwd{sum}\hlstd{(x}\hlopt{^}\hlnum{2}\hlstd{)}
-  \hlstd{b1}\hlkwb{<-} \hlstd{(syx} \hlopt{-} \hlstd{sy}\hlopt{*}\hlstd{sx}\hlopt{/}\hlstd{n)}\hlopt{/}\hlstd{(sxx} \hlopt{-} \hlstd{sx}\hlopt{^}\hlnum{2}\hlopt{/}\hlstd{n)}
-  \hlstd{b0}\hlkwb{<-} \hlstd{(sy} \hlopt{-} \hlstd{b1}\hlopt{*}\hlstd{sx)}\hlopt{/}\hlstd{n}
-  \hlkwd{return}\hlstd{(}\hlkwd{c}\hlstd{(b0,b1))}
-\hlstd{\}}
-
-\hlcom{# subset some data for a regression}
-\hlcom{# and make sure both sale_price and living_sqft are log-scaled}
-\hlstd{data.model}\hlkwb{<-}\hlstd{sales} \hlopt{%>%}
-  \hlkwd{filter}\hlstd{(sale_price}\hlopt{>}\hlnum{0}\hlstd{)} \hlopt{%>%}
-  \hlkwd{left_join}\hlstd{(features,}\hlkwc{by}\hlstd{=}\hlstr{"ssl"}\hlstd{)} \hlopt{%>%}
-  \hlkwd{left_join}\hlstd{(}\hlkwd{select}\hlstd{(details,}\hlopt{-}\hlstd{sale_price,}\hlopt{-}\hlstd{neighborhood),}\hlkwc{by}\hlstd{=}\hlstr{"ssl"}\hlstd{)} \hlopt{%>%}
-  \hlkwd{filter}\hlstd{(}\hlopt{!}\hlkwd{is.na}\hlstd{(living_sqft)} \hlopt{&} \hlstd{living_sqft}\hlopt{>}\hlnum{0}\hlstd{)} \hlopt{%>%}
-  \hlkwd{mutate}\hlstd{(}\hlkwc{log_sale_price}\hlstd{=}\hlkwd{log}\hlstd{(sale_price),}
-         \hlkwc{log_living_sqft}\hlstd{=}\hlkwd{log}\hlstd{(living_sqft))}
-
-\hlstd{fit}\hlkwb{<-}\hlkwd{lm}\hlstd{(log_sale_price} \hlopt{~} \hlstd{log_living_sqft,} \hlkwc{data}\hlstd{=data.model)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
 
 
-\subsection*{Multiple Linear Regression}
+
+\subsection*{Multiple Linear Regression - Last Time }
 
 When we regress $y$ on more than one independent variable, say ($x_1, x_2,...,x_k$) rather than simply ($x_1$), the regression framework is referred to as {\bf multiple linear regression}.
 
@@ -181,7 +137,7 @@ To check the second criteria, that $Cor(living\_area,neighborhood) \ne 0$, we ca
 \end{kframe}
 \end{knitrout}
 
-Anacostia, Ledroit Park, and Takoma are either weakly or not all correlated with living area, but Foggy Bottom is negatively correlated and Georgetown is weakly positively correlated.
+Anacostia, Ledroit Park, and Takoma are either weakly or not at all correlated with living area, but Foggy Bottom is negatively correlated and Georgetown is weakly positively correlated.
 
 To see the connection between including these neighborhoods in the regression, I will create a new variable that sets all other neighborhoods to "other". I put "aa" at the beginning because R treats the first element of a factor variable as the base value for the regression. So by doing this, we can see how the neighborhoods we analyzed above affect our regression in terms of all other DC neighborhoods.
 
@@ -259,6 +215,8 @@ Now I will add dummies for the rest of the DC neighborhoods and run the regressi
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
+
+\subsection*{Multiple Linear Regression - Continuation }
 
 
 \newpage
