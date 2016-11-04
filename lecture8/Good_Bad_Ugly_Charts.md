@@ -116,3 +116,13 @@ Dual axes time series plots may be ok sometimes after all: http://bit.ly/2ehQJyj
 Five problems (and one solution) with dual-axis time series plots: http://bit.ly/2ersxgh
 
 Dual axes time series plots with various more awkward data: http://bit.ly/2ehSyvs
+
+Finally, some Good charts
+========================================================
+
+![](images/good/investing.jpg)
+
+You don't need a computer to make a good chart
+========================================================
+
+![](images/good/xkcd-988-tradition.png)
