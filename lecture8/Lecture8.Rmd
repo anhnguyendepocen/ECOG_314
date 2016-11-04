@@ -256,11 +256,23 @@ logPlot <- gdpPlot +
   scale_x_date(date_breaks="10 years",
                date_labels = "%Y",
                expand=c(0,0),
-               limits = as.Date(c("1945-01-01","2016-12-31
-                                  
-                                  "))) +
+               limits = as.Date(c("1945-01-01","2016-12-31"))) +
   theme_gdocs()
 plot(logPlot)
+```
+
+## Obligatory pie chart
+
+```{r pie}
+df <- data.frame(
+  variable = c("does not resemble", "resembles"),
+  value = c(20, 80)
+)
+ggplot(df, aes(x = "", y = value, fill = variable)) +
+  geom_bar(width = 1, stat = "identity") +
+  scale_fill_manual(values = c("red", "yellow")) +
+  coord_polar("y", start = pi / 3) +
+  labs(title = "Pac man")
 ```
 
 # Other plotting packages
