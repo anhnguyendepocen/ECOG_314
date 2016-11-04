@@ -1,0 +1,279 @@
+---
+title: "Charting"
+author: "Tom Allard"
+date: '2016-11-04'
+output:
+  html_document:
+    toc: no
+  github_document:
+    toc: no
+always_allow_html: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, comment="OUTPUT> ")
+# source(".Rprofile")
+```
+
+# Introduction to ggplot
+
+The package is actually called `ggplot2`, although the function is called `ggplot`:
+
+```{r getlib}
+library(ggplot2)
+```
+
+Many other packages have extended the basic `plot` function, but `ggplot` is built from the ground up.  It was designed to create a *general* approach to plotting (including theming).  Included in the package is the building blocks for unlimited extensibility (beyond the scope of this lecture).  A primary reason for teaching `ggplot` rather than base `plot` is that google will find more examples and help with `ggplot` over anything else.
+
+`ggplot` has its own grammer that is distinctly different from most of what you've seen in R, but it is consistent and, once you understand it, becomes much easier to work with.  `ggplot` takes a layered approach, so you can think of every step as another procedure.  The fundamental layers are:
+
+  * Aesthetics (`aes`) -- Mapping input data to display
+  * Geometry (`geom`) -- Use the mappings to generate shapes
+  * Statistics (`stat`) -- Statistical transformations
+
+## ggplot
+We can start with a simple histogram and compare the base graphics function `hist` to using `ggplot`.
+
+Included in `R` are several sample datasets.  We'll use `mtcars` in this example:
+
+```{r mtcarsPlot}
+head(mtcars)
+plot(mtcars$mpg,mtcars$wt)
+
+library(ggplot2)
+ggplot(mtcars,
+       aes(x=mpg,y=wt)) +
+  geom_point()
+```
+
+In `ggplot`, we often build an object and then add to it (with the "+" syntax).  We can then "plot" the object (which will happen by default when you just type the object's name):
+
+```{r ggplotOO}
+myPlot <- ggplot(mtcars,aes(x=mpg,y=wt))
+myPlot <- myPlot + geom_point()
+plot(myPlot)
+```
+
+## Statistics
+
+Let's add some statistics:
+
+```{r carsSmooth}
+# Note that I am creating a new plot  The original (myPlot) is unchanged
+smoothPlot <- myPlot + geom_smooth()
+plot(smoothPlot)
+```
+
+Additionally, we can specify the method for smoothing:
+
+```{r carsLM}
+# Here I am re-using the original plot (myPlot)
+lmPlot <- myPlot + geom_smooth(method="lm")
+plot(lmPlot)
+```
+
+## Density
+
+Instead of plotting points, we can plot kernel density using a different shape:
+
+```{r, densityPlot}
+densityPlot <- ggplot(mtcars,aes(x=mpg)) +
+  geom_density()
+plot(densityPlot)
+```
+
+## Grouping data
+
+Let's group by gears:
+
+```{r, plotByGears}
+# Number of gears is an integer, but we want to make it a label
+mtcars$gear
+mtcars$gearLabel <- factor(mtcars$gear,levels=c(3,4,5),
+  	labels=c("3 gears","4 gears","5 gears")) 
+mtcars$gearLabel
+# Add an aesthetic "fill" and ggplot will color based on the variable
+gearPlot <- ggplot(mtcars,aes(x=mpg)) +
+  geom_density(aes(fill=gearLabel))
+plot(gearPlot)
+# Use "alpha" to make the colors transparent.
+#   transparent  0  ... 1 solid
+gearPlot <- ggplot(mtcars,aes(x=mpg)) +
+  geom_density(aes(fill=gearLabel),alpha=.5)
+plot(gearPlot)
+```
+
+## Labels
+
+Now let's add some better labels and a title!
+
+```{r, gearLabels}
+gearPlot <- gearPlot +
+  labs(x="Miles Per Gallon",
+       y="Density",
+       fill="Gears") +
+  ggtitle("Distribution of Gas Mileage (by Gears)")
+plot(gearPlot)
+```
+
+## Themes
+
+You can use `ggtheme` to set the general aspect of the chart:
+
+```{r themeHelp, eval=FALSE}
+?ggtheme
+```
+
+```{r themes}
+plot(gearPlot + theme_bw() + ggtitle("theme_bw()"))
+plot(gearPlot + theme_void() + ggtitle("theme_void()"))
+plot(gearPlot + theme_dark() + ggtitle("theme_dark()"))
+# More themes in the ggthemes package
+library(ggthemes)
+plot(gearPlot + theme_excel() + ggtitle("theme_excel()"))
+plot(gearPlot + theme_wsj() + ggtitle("theme_wsj()"))
+```
+
+## Facets
+
+In some circumstances we want to plot relationships between set variables in multiple subsets of the data with the results appearing as panels in a larger figure. This is a known as a facet plot. This is a very useful feature of ggplot2. The faceting is defined by a categorical variable or variables. Each panel plot corresponds to a set value of the variable.
+
+```{r, facets}
+# Like gears, we want transmission and cylinders to be labels
+mtcars$Transmission <- factor(mtcars$am,levels=c(0,1),
+  	labels=c("Automatic","Manual")) 
+mtcars$Cylinders <- factor(mtcars$cyl,levels=c(4,6,8),
+   labels=c("4 cyl","6 cyl","8 cyl")) 
+
+# First, create the basic scatter plot
+facetPlot <- ggplot(mtcars,aes(x=hp,y=mpg)) + 
+  labs(y = "Miles Per Gallon",
+       x = "Horse Power") +
+  geom_point()
+plot(facetPlot)
+
+# Next, add color and shape by transmission
+facetPlot <- ggplot(mtcars,aes(x=hp,y=mpg,
+                               color=Transmission,
+                               shape=Transmission)) + 
+  labs(y = "Miles Per Gallon",
+       x = "Horse Power") +
+  geom_point()
+plot(facetPlot)
+
+# Now add facets
+#   (The drop=FALSE option tells ggplot to show every comination, even
+#   when there is no data).
+facetPlot <- facetPlot + 
+  facet_grid(facets=gearLabel~Cylinders) +
+  ggtitle("MPG vs HP (by Gears & Cylinders)")
+       
+plot(facetPlot)
+```
+
+## Separate regressions on a single plot 
+```{r lmByCyl}
+regPlot <- ggplot(mtcars,aes(x=wt,y=mpg,color=Cylinders)) +
+  labs(y = "Miles Per Gallon",
+       x = "Weight") +
+  geom_point()
+plot(regPlot)
+
+regPlot <- regPlot +
+  geom_smooth(method="lm") +
+  ggtitle("Regression of MPG on Weight") +
+  theme_economist()
+plot(regPlot)
+```
+
+## Timeseries data
+
+The `quantmod` package includes `getSymbols()`, which can load data from the St. Louis Federal Reserve Bank's FRED database.  We'll grab the federal funds rate and the 20-year Treasury Constant Maturity rate:
+
+https://fred.stlouisfed.org/series/FEDFUNDS
+https://fred.stlouisfed.org/series/GS20
+
+```{r getfred, message=FALSE}
+library(quantmod)
+getSymbols(c("FEDFUNDS","GS20"),src="FRED")
+head(FEDFUNDS)
+head(GS20)
+# cbind() joins two tables by column.
+# fortify() creates date as a variable that can be passed to ggplot.
+FF.TCM20 <- fortify(cbind(FEDFUNDS,GS20))
+head(FF.TCM20)
+```
+
+Now that we have some timeseries data, we can plot it:
+
+```{r timeseries}
+tsPlot <- ggplot() +
+  geom_line(data=FF.TCM20,
+            aes(x=Index,y=FEDFUNDS,
+                color = "Federal Funds")) +
+  geom_line(data=FF.TCM20,
+            aes(x=Index,y=GS20,
+                color = "20-Year TCM"))
+plot(tsPlot)
+```
+
+Now, there's still several things wrong with this:
+
+  * The Y-axis is labeled "FEDFUNDS"
+  * The X-axis is labeled "Index"
+  * There aren't enough dates labeled
+  * We're showing 60 years of monthly data
+  * The legend has a weird label
+
+```{r fixTS}
+# xlim and ylim control the limits of the x- and y-axes.
+# Instead of using one of the packages themes, just make our own changes
+tsPlot <- tsPlot +
+  labs(x="",y="Percent") +
+  xlim(as.Date('1995-01-01'),as.Date('2015-12-31')) +
+  ylim(0,10) +
+  theme(legend.position="bottom", 
+        legend.direction="horizontal",
+        legend.title=element_blank()) +
+  ggtitle("Federal Funds vs 20-Year Treasury Constant Maturity (TCM)")
+plot(tsPlot)
+```
+
+## Log scale
+
+When variables span several orders of magnitude, a log scale is appropriate.
+
+```{r gdpPlot}
+getSymbols("GDP",src="FRED")
+gdpPlot <- ggplot() +
+  geom_line(data=fortify(GDP),aes(x=Index,y=GDP/1000)) +
+  labs(x="",y="$ tril") +
+  ggtitle("US GDP")
+plot(gdpPlot)
+
+logPlot <- gdpPlot +
+  scale_y_log10() +
+  scale_x_date(date_breaks="10 years",
+               date_labels = "%Y",
+               expand=c(0,0),
+               limits = as.Date(c("1945-01-01","2016-12-31
+                                  
+                                  "))) +
+  theme_gdocs()
+plot(logPlot)
+```
+
+# Other plotting packages
+
+## dygraphs
+
+`dygraphs` is a useful charting package for data exploration because you can quickly plot a timeseries and see the exact data points as well as zoom in:
+
+```{r dygraph, message=F, warning=F}
+library(dygraphs)
+# Use dplyr's pipe and add dygraph's dyRangeSelector()
+library(dplyr)
+dygraph(cbind(FEDFUNDS,GS20)) %>% 
+  dyRangeSelector()
+```
+
