@@ -3,9 +3,9 @@ title: "Charting"
 author: "Tom Allard"
 date: '2016-11-04'
 output:
-  html_document:
-    toc: no
   github_document:
+    toc: no
+  html_document:
     toc: no
 always_allow_html: yes
 ---
@@ -306,19 +306,6 @@ usmap <- ggplot() +
   ylim(24.5, 50) +
   xlim(-125, -67)
 plot(usmap)
-
-webmap <- webmap +
-  geom_point(
-    data = smallM[(e1.lat==e2.lat & e1.long==e2.long)],
-    aes(
-      x = e1.long,
-      y = e1.lat
-    ),
-    shape=2,
-    color="orange",
-    alpha=fade,
-    size=1
-  )
 
 # Map zip codes to location
 data(zipcode,package="zipcode")
