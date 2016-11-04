@@ -289,3 +289,50 @@ dygraph(cbind(FEDFUNDS,GS20)) %>%
   dyRangeSelector()
 ```
 
+# Maps
+
+```{r maps, warning=F, message=F}
+library(maps)
+library(mapdata)
+library(mapproj)
+library(maptools)
+
+usmap <- ggplot() +
+  geom_polygon(data = map_data("state"),
+               aes(x = long, y = lat, group = group),
+               fill = "#F0EAD0", col = "black") +
+  theme_map() +
+  coord_quickmap() +
+  ylim(24.5, 50) +
+  xlim(-125, -67)
+plot(usmap)
+
+webmap <- webmap +
+  geom_point(
+    data = smallM[(e1.lat==e2.lat & e1.long==e2.long)],
+    aes(
+      x = e1.long,
+      y = e1.lat
+    ),
+    shape=2,
+    color="orange",
+    alpha=fade,
+    size=1
+  )
+
+# Map zip codes to location
+data(zipcode,package="zipcode")
+library(data.table)
+zip_loc <- data.table(zipcode)
+
+# Pick 100 at random
+locations <- zip_loc[sample(nrow(zip_loc),100)]
+
+cityMap <- usmap +
+  geom_point(
+    data = locations,
+    aes(x = longitude, y = latitude)
+  )
+plot(cityMap)
+
+```
