@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2015.5.24)  15 OCT 2016 14:10
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2015.5.24)  3 NOV 2016 10:48
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -358,39 +358,38 @@ Package color Info: Redefining color shadecolor on input line 547.
  [11]
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
 (Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 578.
-Package color Info: Redefining color shadecolor on input line 597.
-Package color Info: Redefining color shadecolor on input line 611.
  [12]
-Package color Info: Redefining color shadecolor on input line 625.
+Package color Info: Redefining color shadecolor on input line 620.
+Package color Info: Redefining color shadecolor on input line 634.
+Package color Info: Redefining color shadecolor on input line 648.
 File: figure/extract_fitted-1.pdf Graphic file (type QTm)
 
 <use  "figure/extract_fitted-1.pdf" >
-Package color Info: Redefining color shadecolor on input line 645.
-Package color Info: Redefining color shadecolor on input line 658.
+Package color Info: Redefining color shadecolor on input line 668.
  [13]
-Package color Info: Redefining color shadecolor on input line 685.
+Package color Info: Redefining color shadecolor on input line 681.
+Package color Info: Redefining color shadecolor on input line 708.
 File: figure/boxplot_residuals-1.pdf Graphic file (type QTm)
 
-<use  "figure/boxplot_residuals-1.pdf" >
-Package color Info: Redefining color shadecolor on input line 705.
- [14]
-Package color Info: Redefining color shadecolor on input line 744.
+<use  "figure/boxplot_residuals-1.pdf" > [14]
+Package color Info: Redefining color shadecolor on input line 728.
+Package color Info: Redefining color shadecolor on input line 767.
  [15]
-Package color Info: Redefining color shadecolor on input line 799.
- [16]
+Package color Info: Redefining color shadecolor on input line 822.
+ [16] [17]
 \openout2 = `appendix.aux'.
 
  (./appendix.tex
-[17
+[18
 
-]) [18] (./regression.aux (./appendix.aux)) ) 
+]) [19] (./regression.aux (./appendix.aux)) ) 
 Here is how much of TeX's memory you used:
- 2512 strings out of 493706
- 32403 string characters out of 6145769
- 101145 words of memory out of 5000000
- 5794 multiletter control sequences out of 15000+600000
- 13087 words of font info for 52 fonts, out of 8000000 for 9000
+ 2517 strings out of 493706
+ 32446 string characters out of 6145769
+ 101154 words of memory out of 5000000
+ 5798 multiletter control sequences out of 15000+600000
+ 13433 words of font info for 53 fonts, out of 8000000 for 9000
  1328 hyphenation exceptions out of 8191
- 27i,9n,26p,571b,315s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 27i,10n,26p,571b,315s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on regression.pdf (18 pages).
+Output written on regression.pdf (19 pages).
