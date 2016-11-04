@@ -3,9 +3,9 @@ title: "Charting"
 author: "Tom Allard"
 date: '2016-11-04'
 output:
-  github_document:
-    toc: no
   html_document:
+    toc: no
+  github_document:
     toc: no
 always_allow_html: yes
 ---
