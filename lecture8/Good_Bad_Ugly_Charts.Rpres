@@ -55,7 +55,7 @@ Time Series Pie Chart
 
 ![](images/ugly/timeseries_pie_chart.jpg)
 
-The D Pie Chart
+The 3D Pie Chart
 ========================================================
 
 ![](images/ugly/windows_mac_pie_chart.png)
