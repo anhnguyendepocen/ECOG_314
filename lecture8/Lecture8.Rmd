@@ -25,14 +25,13 @@ library(ggplot2)
 
 Many other packages have extended the basic `plot` function, but `ggplot` is built from the ground up.  It was designed to create a *general* approach to plotting (including theming).  Included in the package is the building blocks for unlimited extensibility (beyond the scope of this lecture).  A primary reason for teaching `ggplot` rather than base `plot` is that google will find more examples and help with `ggplot` over anything else.
 
-`ggplot` has its own grammer that is distinctly different from most of what you've seen in R, but it is consistent and, once you understand it, becomes much easier to work with.  `ggplot` takes a layered approach, so you can think of every step as another procedure.  The fundamental layers are:
+`ggplot` has its own grammar that is distinctly different from most of what you've seen in R, but it is consistent and, once you understand it, becomes much easier to work with.  `ggplot` takes a layered approach, so you can think of every step as another procedure.  The fundamental layers are:
 
   * Aesthetics (`aes`) -- Mapping input data to display
   * Geometry (`geom`) -- Use the mappings to generate shapes
   * Statistics (`stat`) -- Statistical transformations
 
 ## ggplot
-We can start with a simple histogram and compare the base graphics function `hist` to using `ggplot`.
 
 Included in `R` are several sample datasets.  We'll use `mtcars` in this example:
 
