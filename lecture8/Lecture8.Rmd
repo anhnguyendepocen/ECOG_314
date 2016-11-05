@@ -322,3 +322,9 @@ cityMap <- usmap +
 plot(cityMap)
 
 ```
+
+# Homework
+
+Using ggplot, create a sensible line chart comparing the average monthly highway fatalities with the actual highway fatalaties in 2016.  You do not need to indicate the highs and the lows, only the historical average vs 2016.
+
+![](images/bad/CO_DOT_highway_deaths.png)
