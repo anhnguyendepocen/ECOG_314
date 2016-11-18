@@ -3,13 +3,10 @@ title: "Dates, Times, TimeIndexes and Time Series"
 author: "Jeff Hallman"
 date: '2016-11-18'
 output:
-   html_document:
-     toc: no
-   github_document:
-     toc: no
-  #pdf_document:
-  #  toc: yes
-  #  toc_depth: 3
+  html_document:
+    toc: no
+  github_document:
+    toc: no
 always_allow_html: yes
 ---
 
@@ -399,9 +396,7 @@ dateRange(gdp)
 dateRange(m2)
 tifName(gdp)
 tifName(m2)
-
-qm2 <- m2           # <<-  1 of 3: added by william fixes variable name change
-
+qm2 <- convert(m2, tif = "quarterly", observed = "averaged")         
 tisPlot(gdp, qm2)
 tisPlot(gdp, qm2, log = T)
 ```
@@ -411,10 +406,7 @@ thing we could do is fit a model and look at it:
 
 ```{r gdpMoneyRegression2}
 lgdp <- log(gdp)
-#lm2  <- log(qm2)
-
-lm2  <- log(qm2)[1:length(lgdp)]         # <<-  2 of 3:added by william solve dissimilar length problem
-
+lm2  <- log(qm2)
 mod <- lm(lgdp ~ lm2)
 summary(mod)
 tisPlot(lgdp, mod$fitted.values)
@@ -438,9 +430,6 @@ Let's see:
 ```{r gdpMoneyRegression4}
 ggdp <- window(diff(log(gdp)), start = c(1991, 1))
 gm2  <- window(diff(log(qm2)), start = c(1991, 1))
-
-gm2  <- gm2[1:length(ggdp)]                #<<-  3 of 3:added by william fixes dimension dissimilarities
-
 gmod <- lm(ggdp ~ gm2)
 summary(gmod)
 tisPlot(ggdp, gmod$fitted.values, lineType = "solid", color = c("green", "blue"))
