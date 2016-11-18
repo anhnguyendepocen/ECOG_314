@@ -3,13 +3,13 @@ title: "Dates, Times, TimeIndexes and Time Series"
 author: "Jeff Hallman"
 date: '2016-11-18'
 output:
-#  html_document:
-#    toc: no
-#  github_document:
-#    toc: no
-   pdf_document:
-     toc: yes
-     toc_depth: 3
+  html_document:
+    toc: no
+  github_document:
+    toc: no
+#   pdf_document:
+#     toc: yes
+#     toc_depth: 3
 always_allow_html: yes
 ---
 
@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, comment="OUTPUT> ")
 
 Early versions of R had a simple Date class, and code that handled somewhat more
 general time objects was in a separate `chron` package.  Neither worked very well
-for doing various kinds of date arithmetic or as indexes into time seriesm and
+for doing various kinds of date arithmetic or as indexes into time series, and
 this led to a number of people writing their own time and date packages. But
 base R time and date code has improved a lot over the years.
 

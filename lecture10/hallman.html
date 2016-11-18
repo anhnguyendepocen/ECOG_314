@@ -161,11 +161,11 @@ today + twoWeeks</code></pre>
 <h2>Times (w/Dates)</h2>
 <p>The POSIX standards specify a system for describing instants in time. R uses two timeDate classes, <code>POSIXct</code> and <code>POSIXlt</code> to implement this system. A POSIXct represents a time as the number of seconds since midnight on January 1, 1970, in the GMT time zone:</p>
 <pre class="r"><code>aTime &lt;- Sys.time(); aTime</code></pre>
-<pre><code>OUTPUT&gt;  [1] &quot;2016-11-18 08:59:12 EST&quot;</code></pre>
+<pre><code>OUTPUT&gt;  [1] &quot;2016-11-18 09:11:31 EST&quot;</code></pre>
 <pre class="r"><code>class(aTime)</code></pre>
 <pre><code>OUTPUT&gt;  [1] &quot;POSIXct&quot; &quot;POSIXt&quot;</code></pre>
 <pre class="r"><code>unclass(aTime)</code></pre>
-<pre><code>OUTPUT&gt;  [1] 1479477552</code></pre>
+<pre><code>OUTPUT&gt;  [1] 1479478291</code></pre>
 <pre class="r"><code>unclass(as.POSIXct(&quot;19700101:000001&quot;, tz= &quot;GMT&quot;, format = &quot;%Y%m%d:%H%M%S&quot;))</code></pre>
 <pre><code>OUTPUT&gt;  [1] 1
 OUTPUT&gt;  attr(,&quot;tzone&quot;)
@@ -173,13 +173,13 @@ OUTPUT&gt;  [1] &quot;GMT&quot;</code></pre>
 <p>The <code>POSIXlt</code> represents instants in time using a list with named elements:</p>
 <pre class="r"><code>unclass(as.POSIXlt(Sys.time()))</code></pre>
 <pre><code>OUTPUT&gt;  $sec
-OUTPUT&gt;  [1] 12.14933
+OUTPUT&gt;  [1] 31.22684
 OUTPUT&gt;  
 OUTPUT&gt;  $min
-OUTPUT&gt;  [1] 59
+OUTPUT&gt;  [1] 11
 OUTPUT&gt;  
 OUTPUT&gt;  $hour
-OUTPUT&gt;  [1] 8
+OUTPUT&gt;  [1] 9
 OUTPUT&gt;  
 OUTPUT&gt;  $mday
 OUTPUT&gt;  [1] 18
@@ -214,17 +214,17 @@ OUTPUT&gt;  [1] &quot;&quot;    &quot;EST&quot; &quot;EDT&quot;</code></pre>
 <pre class="r"><code>format(Sys.time(), format = &quot;%Y is year, %m is month, %d is day&quot;)</code></pre>
 <pre><code>OUTPUT&gt;  [1] &quot;2016 is year, 11 is month, 18 is day&quot;</code></pre>
 <pre class="r"><code>as.character(Sys.time(), format = &quot;%b is abbreviated month name, %H is hour&quot;)</code></pre>
-<pre><code>OUTPUT&gt;  [1] &quot;Nov is abbreviated month name, 08 is hour&quot;</code></pre>
+<pre><code>OUTPUT&gt;  [1] &quot;Nov is abbreviated month name, 09 is hour&quot;</code></pre>
 <pre class="r"><code>format(Sys.time(), format = &quot;There are also compound formats like %c&quot;)</code></pre>
-<pre><code>OUTPUT&gt;  [1] &quot;There are also compound formats like Fri Nov 18 08:59:12 2016&quot;</code></pre>
+<pre><code>OUTPUT&gt;  [1] &quot;There are also compound formats like Fri Nov 18 09:11:31 2016&quot;</code></pre>
 <pre class="r"><code>as.POSIXct(&quot;2016-12-24 23:59&quot;, format = &quot;%Y-%m-%d %H:%M&quot;) ## Santa arrival time</code></pre>
 <pre><code>OUTPUT&gt;  [1] &quot;2016-12-24 23:59:00 EST&quot;</code></pre>
 <p>Finally, some generic functions like <code>seq</code> have methods that work with both Dates and POSIXt times:</p>
 <pre class="r"><code>seq(from = Sys.time(), by = &quot;2 hours&quot;, length = 8)</code></pre>
-<pre><code>OUTPUT&gt;  [1] &quot;2016-11-18 08:59:12 EST&quot; &quot;2016-11-18 10:59:12 EST&quot;
-OUTPUT&gt;  [3] &quot;2016-11-18 12:59:12 EST&quot; &quot;2016-11-18 14:59:12 EST&quot;
-OUTPUT&gt;  [5] &quot;2016-11-18 16:59:12 EST&quot; &quot;2016-11-18 18:59:12 EST&quot;
-OUTPUT&gt;  [7] &quot;2016-11-18 20:59:12 EST&quot; &quot;2016-11-18 22:59:12 EST&quot;</code></pre>
+<pre><code>OUTPUT&gt;  [1] &quot;2016-11-18 09:11:31 EST&quot; &quot;2016-11-18 11:11:31 EST&quot;
+OUTPUT&gt;  [3] &quot;2016-11-18 13:11:31 EST&quot; &quot;2016-11-18 15:11:31 EST&quot;
+OUTPUT&gt;  [5] &quot;2016-11-18 17:11:31 EST&quot; &quot;2016-11-18 19:11:31 EST&quot;
+OUTPUT&gt;  [7] &quot;2016-11-18 21:11:31 EST&quot; &quot;2016-11-18 23:11:31 EST&quot;</code></pre>
 </div>
 </div>
 <div id="timeindexes-in-the-tis-package" class="section level1">
