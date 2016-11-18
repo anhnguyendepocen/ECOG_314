@@ -3,10 +3,13 @@ title: "Dates, Times, TimeIndexes and Time Series"
 author: "Jeff Hallman"
 date: '2016-11-18'
 output:
-  html_document:
-    toc: no
-  github_document:
-    toc: no
+#  html_document:
+#    toc: no
+#  github_document:
+#    toc: no
+   pdf_document:
+     toc: yes
+     toc_depth: 3
 always_allow_html: yes
 ---
 
