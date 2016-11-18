@@ -1,0 +1,276 @@
+---
+title: "Dates, Times, TimeIndexes and Time Series"
+author: "Jeff Hallman"
+date: '2016-11-18'
+output:
+  html_document:
+    toc: no
+  github_document:
+    toc: no
+always_allow_html: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, comment="OUTPUT> ")
+# source(".Rprofile")
+```
+
+# Dates and Times in Base R
+## Dates
+
+Early versions of R had a simple Date class, and code that handled somewhat more
+general time objects was in a separate `chron` package.  Neither worked very well
+for doing various kinds of date arithmetic or as indexes into time seriesm and
+this led to a number of people writing their own time and date packages. But
+base R time and date code has improved a lot over the years.
+
+The base `Date` class supports dates without times. Not including times simplifies
+things a lot, since you no longer have to worry about time zones and daylight
+savings times, or what to do if only a date was specified but not a time. Should
+the default time be noon? Midnight? 
+
+Here are some Date examples:
+```{r Date1}
+today <- Sys.Date(); today
+today - 1 ## yesterday
+today + 7
+```
+Internally, Dates are represented as the number of days since January 1, 1970.
+You can see this by `unclass`ing them:
+```{r Date2}
+unclass(today)
+baseDate <- as.Date("1970-01-01"); unclass(baseDate)
+as.integer(today - baseDate)
+```
+Now you're wondering why the `as.integer` wrapper on that last one. That's
+because without it, you get a `difftime` object:
+```{r difftime1}
+myDifftime <- today - baseDate; myDifftime
+unclass(myDifftime)
+```
+A difftime object represents a time interval. It's a number with a "units"
+attribute. You can also create a difftime object explicitly:
+```{r difftime2}
+twoWeeks <- as.difftime(2, units = "weeks")
+today + twoWeeks
+```
+One problem with difftime's is that the units have to be "linear", i.e., weeks,
+days, hours, seconds, etc. Months, quarters and years don't work. If I tell you
+to add one month to a date, how many days do you add? It depends on what month
+the original date is in. 
+
+## Times (w/Dates)
+The POSIX standards specify a system for describing instants in time. R uses two
+timeDate classes, `POSIXct` and `POSIXlt` to implement this system. A POSIXct
+represents a time as the number of seconds since midnight on January 1, 1970, in
+the GMT time zone:
+```{r POSIXt1}
+aTime <- Sys.time(); aTime
+class(aTime)
+unclass(aTime)
+unclass(as.POSIXct("19700101:000001", tz= "GMT", format = "%Y%m%d:%H%M%S"))
+```
+The `POSIXlt` represents instants in time using a list with named elements:
+```{r POSIXt2}
+unclass(as.POSIXlt(Sys.time()))
+```
+## Date formats
+You can convert most date and dateTime objects to strings and back using format
+specifiers. For example:
+```{r dateFormats}
+format(Sys.time(), format = "%Y is year, %m is month, %d is day")
+as.character(Sys.time(), format = "%b is abbreviated month name, %H is hour")
+format(Sys.time(), format = "There are also compound formats like %c")
+as.POSIXct("2016-12-24 23:59", format = "%Y-%m-%d %H:%M") ## Santa arrival time
+```
+Finally, some generic functions like `seq` have methods that work with
+both Dates and POSIXt times:  
+```{r seq.POSIXt}
+seq(from = Sys.time(), by = "2 hours", length = 8)
+```
+# TimeIndexes in the `tis` package
+The `tis` package defines the `jul` (Julian date) and `ti` (Time Index) classes. 
+```{r getlib}
+library(tis)
+```
+## Julian dates
+are represented by instances of the `jul` class. Two Julian dates differ by the
+number of days between them. This is also true of `Date` objects in base R, but
+`jul` dates use a different base date. You can create a `jul` from a `ti` with
+the `jul()` function, which like `ymd()` has an optional `offset` argument. Like
+`ti's`, `jul` objects can be converted to and created from several other kinds
+of date objects.
+```{r jul}
+dayInYear <- jul(today()) - jul(20151231); dayInYear
+```
+## ti objects
+Time index objects are used for date calculations and as indexes for `tis` time
+series. A time index has two parts: a frequency and period. The period
+represents the number of periods elapsed since the base period for that
+frequency. Adding or subtracting an integer to a time index adds or subtracts
+that number to the period part, so that if `z` is a time index representing the
+week ending Monday, April 3 2006, `z + 1` is a time index representing the week
+ending April 10, `z + 3` represents the week ending April 24, and so on.  
+
+A time index has class 'ti', and is usually created by the `ti` function. 
+However, there is a `today()` function that returns a "daily" `ti`. If z
+is a ti, you can access its frequency code with `tif(z)` or its period with
+`period(z)`. You can also get the frequency name from `tifName(z)`. Note that you
+can have a vector `ti`, that is, a vector with class 'ti' whose individual
+elements each represent a different time index. Here are some examples:
+```{r ti 1}
+march2007 <- ti(20070331, "monthly"); march2007
+today()
+thisWeek <- ti(latestMonday(), "wmonday"); thisWeek
+tif(today())
+tifName(today())
+period(today())
+# How this is actually encoded is pretty simple:
+tif(thisWeek)
+period(thisWeek)
+format(unclass(thisWeek), digits = 12)
+period(ti(latestMonday() + 28, "wmonday"))
+# yyyymmdd dates for the last day of the next 12 months:
+ymd(currentMonth() + 0:11)
+# the third Tuesday of the year for each of the next 5 years:
+ymd(ti(firstDayOf(currentYear() + 1:5), "wtuesday") + 2)
+```
+If you want to convert a `ti` object to a yyyymmdd date, use the `ymd()` function:
+```{r ti 2}
+dec57 <- ti(19571231, tif = "monthly")
+# By default, ymd(aTi) gives you the last day of the period. To get the first day of the period, use this trick
+ymd(jul(dec57 - 1) + 1)
+```
+The `ti` function needs to know what the frequency of the ti it's creating is
+supposed to be, and the first argument has to be a itself a ti object or
+something that specifies a point in time. You can supply additional arguments to
+help it figure out how to interpret the first argument, e.g.,
+```{r ti 3}
+ti("3/31/1957", tif = "daily", format = "%m/%d/%Y") + 1
+ti("3/31/1957", freq = 12,     format = "%m/%d/%Y") + 1
+```
+Finally, there are some convenience function like `holidays()` and 
+`nextBusinessDay()` which knows about holidays. 
+
+# Time Series
+Base R contains a lot of code for representing and analyzing time series data.
+The fundamental class is `ts`, which can represent regularly spaced time series,
+such as annual, monthly and quarterly data. It doesn't work well with weekly
+data because not all years have the same number of weeks. It depends on what day
+of the year a particular year starts on and what day of the week the weeks
+you're looking at end on. 
+
+The inability of early versions of R to deal well with weekly, biweekly, daily and
+business-day data was the impetus behind the predecessors of the `tis` package.
+`tis` series have observation times tjat are represented by `ti` sequences. A
+`tis` is actually just a vector or matrix with class 'tis' and a `start`
+attribute that is the `ti` for the first observation. Then `start - 1 + k` is the
+time index for the k'th observation, and so on. If `x` is a `tis`, you can
+reference the fourth observation using either the number '4' or the `ti` given
+by `(start(x) + 3)` as an index into `x`. Here are some examples of creating a
+`tis` series and indexing into it:
+```{r tis 1}
+x <- tis(1:120, start = latestJanuary() - 108); x
+k = 2; start(x) + k
+x[start(x) + 3]
+x[end(x) + 1] <- x[end(x)]; x
+x[end(x) + 3] <- 42; x
+```
+As you might expect, arithmetic operations (addition, subtraction,
+multiplication and division) can all be performed with combinations of scalars
+and series, and the 'tis' machinery will insure that everything is lined up and
+windowed, and that the return values will also be time indexed series. 
+Furthermore, many of the standard R matrix and time series functions have 'tis'
+versions as well. For example, if `X` is a multivariate time indexed series with a
+column per component, then `rowSums(X)` is a univariate tis, as is `rowMeans(X)`.
+The `cbind()` function can be used to add columns to a tis, while `mergeSeries()` can do
+what it says. The `lag` and `diff` functions operate as you might expect, and you
+can `window` a series to cut off observations before and/or after particular time
+indexes.  
+
+## Plotting tis series
+
+### Download Starbux monthly return date into a tis series
+Let us get started by downloading the monthly return data from <a
+href="http://assets.datacamp.com/course/compfin/sbuxPrices.csv">sbuxPrices.csv</a>,
+and by using tisFromCsv() to read a tis series from it.
+```{r downloadfile }
+# Download the CSV file and look at the first few lines:
+url <- "http://assets.datacamp.com/course/compfin/sbuxPrices.csv"
+download.file(url, dest = "sbux.csv")
+flines <- readLines("sbux.csv"); flines[1:5]
+```
+There is a problem with the dates. All of the dates except the first one are the
+first weekday of a month. Let's make the heroic assumption that the first date
+was supposed to be the first of March 1993 rather than the 31'st. Here's a quick
+fix in R: 
+
+```{r fixfile }
+flines[2] <- gsub("3/31", "3/1", flines[2])
+cat(flines, file = "sbux.csv", sep = "\n")
+flines <- readLines("sbux.csv"); flines[1:5]
+```
+
+Now that looks OK. We'll use the `tisFromCsv` function to read the data into a
+`tis` time series. Note we set the stringsAsFactors global option to FALSE to
+avoid a PITA
+
+```{r tisFromCsv 1}
+options(stringsAsFactors = FALSE)
+sbux <- tisFromCsv("sbux.csv", dateCol = "Date", dateFormat = "%m/%d/%Y")
+str(sbux)
+# sbux is a list of length one, because tisFromCsv returns a list of the series
+# it reads in. Let's just make it be the series itself:
+sbux <- sbux[[1]]
+### Info about sbux
+class(sbux)
+start(sbux)
+frequency(sbux)
+tifName(sbux)
+dateRange(sbux)
+head(ti(sbux))
+head(time(sbux))
+```
+Notice that `time(x)` returns the times of the observations in years, with the
+first day of the year counting as day 0 of that year. So `time(jul(20010101))` is
+2001, while `time(jul(20001231))` is 2000.997.
+
+To get the subseries that starts and ends on particular dates, use the `window()` function:
+```{r window}
+sbuxShort <- window(sbux, start = 19940301, end = 19950301)
+sbuxShort
+```
+What happened here is that the `window` method for `tis` objects helpfully first
+converted the `start` and `end` parameters to `ti` objects with the same `tif`
+as `sbux`, and then cut off the series before the start ti and after the end ti. 
+
+### Subsetting directly
+If you just want the observation for July 1996, you can do this:
+```{r accessByTi}
+sbux[ti(19960701, tif = tif(sbux))]
+# Verify this (note the c(year, period) form for start and end
+window(sbux, start = c(1996, 1), end = c(1996,12))
+```
+If we want to plot the data, we need some X-axis coordinates. One way to do this
+is with the `time()` function we saw above:
+```{r plot}
+plot(time(sbux), sbux)
+# or dress it up a little
+plot(time(sbux), sbux, type = "l", col = "blue", 
+     lwd = 2, ylab = "Adjusted close",
+     main = "Monthly closing price of SBUX")
+grid()
+```
+
+or we can use a function that knows something about tis series:
+```{r tisPlot}
+tisPlot(sbux)
+# and dress this one up a bit
+tisPlot(sbux, color = "green", 
+        xTickFreq = "annual", xTickSkip = 2,
+        xUnlabeledTickFreq = "annual",
+        xMinorTickFreq = "quarterly",
+        head = "Monthly closing price of SBUX")
+```
+
+

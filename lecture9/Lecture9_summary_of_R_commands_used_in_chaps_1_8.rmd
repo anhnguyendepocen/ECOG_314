@@ -1,0 +1,535 @@
+---
+title: "ECOG314 -- Summary of R commands used in chapters 1 through 8"
+filename: "Lecture9_summary_of_R_commands_used_in_chaps_1_8.rmd.rmd"
+author: "William Ampeh"
+date: "November 14, 2016"
+output: 
+#   pdf_document:
+#     toc: yes
+#     toc_depth: 3
+#  word_document:
+#    fig_width: 5
+#    fig_height: 5
+#   fig_caption: true
+  html_document:
+    highlight: pygments
+    theme: spacelab
+    toc: yes
+header-includes: \usepackage{graphicx}
+---
+
+```{r setup, include=FALSE}
+#https://www.rforge.net/doc/packages/knitr/opts_chunk.html
+
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, comment="OUTPUT> ", background='yellow' )
+options("width"=512)
+
+```
+
+
+```{r load_packages, include=FALSE}
+
+### Function to install and load required packages
+
+check_pkgs <- function(project_pkgs) {
+  installed_pkgs <- project_pkgs %in% installed.packages()    # Install project packages (if not already installed)
+  if(length(project_pkgs[!installed_pkgs]) > 0) install.packages(project_pkgs[!installed_pkgs])
+  lapply(project_pkgs, require, character.only=TRUE)          # Load packages into session
+}
+
+check_pkgs(           #  List of required packages
+  c( "knitr",         #  A general-purpose tool for dynamic report generation in R
+     # "ggplot2",       # powerful graphics language for creating elegant and complex plots
+     # "dplyr",         # provides data manipulating functions
+     # "xts",           # Loads package zoo for time series manipulation
+     # "scales",        # library scales and the function scale_x_datetime
+     # "car",           # multi-variate scatter plot "scatterplotMatrix()" function
+     # "graphics",      # pairs to produce a matrix of scatterplots
+     # "RColorBrewer",  # visualize 
+     "magrittr",      # Provides a mechanism for chaining commands  head(data.df, n=1) becomes data.df %>% head(n=1)
+     "reshape"        # you "melt" data so that each row is a unique id-variable combination
+     )
+)
+
+```
+
+```{r eval=TRUE}
+#opts_chunk$get()        # see my options
+
+a=rnorm(20); head(a)
+```
+
+# Summary of R commands used in Lectures 1 through 8
+
+The following is a summary of R commands we will be using throughout Statistics 100, and maybe
+a few extras we will not end up using.  Please refer to the homework and course notes for examples
+of their usage, including the appropriate arguments of the commands.  In the descriptions below,
+fnc is an arbitrary R command.
+
+<!-- more -->
+
+### Lecture 1 -- Introduction to Basics
+Assigning data in R:
+
+
+* y = fnc(x) ??? assigns the results of the function fnc evaluated at x to the variable y.
+* file.choose() ??? navigates to a data ???le on your computer.
+
+ read.table(fname) ??? reads data into R from ???le fname.
+
+ read.csv(fname) ??? reads data into R from a comma-separated value ???le fname
+
+ data.frame(...) ??? creates a data frame within R.
+
+ View(x) ??? view data frame x within R. Can also just type the name of the data frame at the
+     prompt.
+
+ help(fnc) ??? help page for function "fnc".
+
+### Lecture 2
+Reading, viewing, and assigning data in R:
+
+
+ y = fnc(x) ??? assigns the results of the function fnc evaluated at x to the variable y.
+
+ file.choose() ??? navigates to a data ???le on your computer.
+
+ read.table(fname) ??? reads data into R from ???le fname.
+
+ read.csv(fname) ??? reads data into R from a comma-separated value ???le fname
+
+ data.frame(...) ??? creates a data frame within R.
+
+ View(x) ??? view data frame x within R. Can also just type the name of the data frame at the
+     prompt.
+
+ help(fnc) ??? help page for function "fnc".
+
+
+Descriptive statistics:
+
+
+ summary(x) ??? data summary of x.
+
+ mean(x) ??? sample mean of x.
+
+ sd(x) ??? sample standard deviation of x.
+
+ length(x) ??? number of values in x.
+
+ table(x) ??? for categorical variable x, creates vector of counts of each unique category.
+
+ cor(x,y) ??? correlation between x and y.
+
+ by(y,x,fnc) ??? with categorical x and function fnc, carry out fnc(y) for each level of x.
+
+
+
+
+                                                1
+Graphics:
+
+
+ hist(x) ??? histogram of data in x.
+
+ stem(x) ??? stem and leaf plot of data in x.
+
+ plot(x,y) ??? scatter plot of y against x.
+
+ lines(supsmu(x,y)) ??? add smoother to existing scatter plot.
+
+ boxplot(list(x1,x2,...)) ??? side-by-side boxplots of variables x1, x2, etc.
+
+ boxplot(y ~ x) ??? alternative method for boxplots if y is quantitative and x is categorical.
+
+ barplot(x) ??? barplot of x (where x contains the heights of the bars).
+
+ abline(a,b) ??? add the line y = a + bx to an existing plot.
+
+ abline(h=a) ??? add a horizontal line at y = a to an existing plot.
+
+ abline(v=a) ??? add a vertical line at x = a to an existing plot.
+
+ abline(model.fit) ??? add a regression line based on the model model.fit to an existing plot.
+
+ qqnorm(x) ??? normal probability plot of data in x.
+
+ qqline(x) ??? adds a line to a normal probability plot passing through 1Q and 3Q
+
+
+Probability distribution computations:
+
+
+ dbinom(x, n, p) ??? P(X = x) where X ??? B(n, p)
+
+ pnorm(x, mean, sd) ??? P(X < x) where X ??? N(mean, sd)
+
+ qnorm(p, mean, sd) ??? the value of x in p = P(X < x), where X ??? N(mean, sd)
+
+ pt(x, df) ??? P(X < x) where X ??? t(df)
+
+ qt(p, df) ??? the value of x in p = P(T < x), where T ??? t(df)
+
+ pchisq(x, df) ??? P(X 2 < x) where X 2 ??? ??2 (df)
+
+
+Random sampling (without replacement):
+
+
+ sample(n) ??? a random arrangement of the ???rst n positive integers.
+
+ sample(n, size) ??? a random sample of size values from among the ???rst n positive integers.
+
+
+                                                2
+Statistical inference:
+
+
+ t.test(x, mu) ??? one-sample t-test or con???dence interval with data in x, with null hypothesized
+     value mu.
+
+ t.test(x1, x2) ??? two-sample t-test or con???dence interval for di???erence in means with data in
+     x1 and x2
+
+ t.test(y ~ x, data=data.df) ??? alternative method for two-sample t-test; y is the quantitative
+     response and x is binary categorical variable in data frame data.df.
+
+ prop.test(x, n, p) ??? one-sample z -test or con???dence interval for a Binomial probability, with
+     x successes in a sample size of n, and a hypothesized probability p.
+
+ prop.test(x, n) ??? two-sample z -test or con???dence interval for di???erence in Binomial probabili-
+     ties, with x containing two counts of successes, and n containing two sample sizes.
+
+ mcnemar.test(x) ??? McNemar's test for di???erence in Binomial probabilities with paired data,
+     with x containing 2 × 2 data frame.
+
+ aov(y ~ x, data=data.df) ??? analysis of variance of response y on categorical variable x con-
+     tained in data frame data.df.
+
+ lm(y~x1+x2+x3+..., data=data.df) ??? least-squares regression of y on x1, x2, etc., within data
+     frame data.df.
+
+ glm(y~x1+x2+x3+..., family=binomial, data=data.df) ??? logistic regression of y on x1, x2,
+     etc., within data frame data.df.
+
+ summary(model.fit) ??? summarize model.fit, the results of either analysis of variance, least-
+     squares regression, or logistic regression.
+
+ step(model.fit) ??? stepwise variable selection for least-squares or logistic regressions, with largest
+     model in model.fit.
+
+ predict(model.fit, newdata=newdata.df) ??? prediction of least-squares or logistic regression
+     model in model.fit using data in newdata.df.
+
+ fitted(model.fit) ??? ???tted values from model.fit.
+
+ residuals(model.fit) ??? residuals from model.fit.
+
+
+# ```{r load_data eval=FALSE}
+# # load the California Schools Dataset and give the dataset a shorter name
+# data(CASchools)
+# cas <- CASchools
+# 
+# # Convert grade to numeric
+# 
+# # table(cas$grades)
+# cas$gradesN <- cas$grades == "KK-08"
+# 
+# # Get the set of numeric variables
+# v <- setdiff(names(cas), c("district", "school", 
+#     			"county", "grades"))
+# 
+# ```
+
+### Q 1 What does the CASchools dataset involve?
+Quoting the help (i.e., `?CASchools`), the data is "from all 420 K-6 and K-8 districts in California with data available for 1998 and 1999" and the variables are:
+
+    * district: character. District code.
+    * school: character. School name.
+    * county: factor indicating county.
+    * grades: factor indicating grade span of district.
+    * students: Total enrollment.
+    * teachers: Number of teachers.
+    * calworks: Percent qualifying for CalWorks (income assistance).
+    * lunch: Percent qualifying for reduced-price lunch.
+    * computer: Number of computers.
+    * expenditure: Expenditure per student.
+    * income: District average income (in USD 1,000).
+    * english: Percent of English learners.
+    * read: Average reading score.
+    * math: Average math score.
+
+Let's look at the basic structure of the data frame. i.e., the number of observations and the types of values:
+# 
+# ```{r}
+# str(cas)
+# # Hmisc::describe(cas) # For more extensive summary statistics
+# ```
+# 
+# 
+# 
+# ### Q. 2  To what extent does expenditure per student vary?
+# ```{r cas2, message=FALSE}
+# qplot(expenditure, data = cas) + xlim(0, 8000) + 
+# 		xlab("Money spent per student ($)") +
+# 		ylab("Count of schools")
+# 
+# round(t(psych::describe(cas$expenditure)), 1)
+# ```
+# 
+# The greatest expenditure per student is around double that of the least expenditure  per student.
+# 
+# 
+# ### Q. 3a  What predicts expenditure per student?
+# ```{r}
+# # Compute and format set of correlations
+# corExp <- cor(cas["expenditure"], 
+# 		cas[setdiff(v, "expenditure")])
+# corExp <- round(t(corExp),2)
+# corExp[order(corExp[,1], decreasing = TRUE), , 
+# 		drop = FALSE]
+# ```
+# 
+# More is spent per student in schools :
+# 
+# 1. where people with greater incomes live
+# 2. reading scores are higher
+# 3. that are K-6
+# 
+# 
+# ### Q. 4  what is the relationship between district level maths and reading scores?
+# ```{r cas4, message=FALSE}
+# ggplot(cas, aes(read, math)) + geom_point() + 
+# 		geom_smooth()
+# ```
+# 
+# At the district level, the correlation is very strong (r = The correlation is `r round(cor(cas$read, cas$math), 2)`). From prior experience I'd expect correlations at the individual-level in the .3 to .6 range.  Thus, these results are consistent with group-level relationships  being much larger than individual-level relationships.
+# 
+# ### Q. 5 What is the relationship between maths and reading after partialling out other effects?
+# 
+# 
+# ```{r}
+# # command has strange syntax requiring column numbers rather than variable names
+# partial.r(cas[v], 
+#           c(which(names(cas[v]) == "read"), which(names(cas[v]) == "math")), 
+#           which(!names(cas[v]) %in% c("read", "math"))
+#           )
+# ```
+# 
+# The partial correlation is still very strong but is substantially reduced.
+# 
+# 
+# ### Q. 6 What fraction of a computer does each student have?
+# ```{r}
+# cas$compstud <- cas$computer / cas$students
+# describe(cas$compstud)
+# qplot(compstud, data = cas)
+# ```
+# 
+# The mean number of computers per student is `r round(mean(cas$compstud), 3)`.
+# 
+# 
+# ### Q. 7 What is a good model of the combined effect of other variables on academic performance (i.e., math and read)?
+# ```{r cas7}
+# # Examine correlations between variables
+# psych::pairs.panels(cas[v])
+# ```
+# 
+# `pairs.panels` shows correlations in the upper triangle, scatterplots in the lower triangle, and variable names and distributions on the main diagonal.
+# After examining the plot several ideas emerge.
+# 
+# ```{r cas7.transformation, tidy=FALSE}
+# # (a) students is a count and could be log transformed
+# cas$studentsLog <- log(cas$students)
+# 
+# # (b) teachers is not the variable of interest:
+# #	it is the number of students per teacher
+# cas$studteach <- cas$students /cas$teachers
+# # (c) computers is not the variable of interest:
+# #  it is the ratio of computers to students
+# # table(cas$computer==0) 
+# # Note some schools have no computers so ratio would be problematic.
+# # Take percentage of a computer instead
+# cas$compstud <- cas$computer / cas$students 
+# 
+# # (d) math and reading are correlated highly, reduce to one variable
+# cas$performance <- as.numeric(
+# 		scale(scale(cas$read) + scale(cas$math)))
+# ```
+# Normally, I'd add all these transformations to an initial data transformation file that I call in the first block, but for the sake of the narrative, I'll leave them here.
+# 
+# Let's examine correlations between predictors and outcome.
+# ```{r}
+# m1cor <- cor(cas$performance, 
+# 		cas[c("studentsLog", "studteach",	"calworks",  
+# 						"lunch", "compstud", "income", 
+# 						"expenditure", "gradesN")])
+# t(round(m1cor, 2))
+# ```
+# 
+# 
+# Let's examine the multiple regression.
+# ```{r}
+# m1 <- lm(performance ~ studentsLog + studteach + 
+# 				calworks + lunch + compstud
+# 				+ income + expenditure + grades, data = cas)		
+# summary(m1)
+# ```
+# And some indicators of predictor relative importance.
+# ```{r}
+# # calc.relimp from relaimpo package.
+# (m1relaimpo <- calc.relimp(m1,	type="lmg",	rela=TRUE))
+# ```
+# 
+# Thus, we can conclude that:
+# 
+# 1. Income and indicators of income (e.g., low levels of lunch vouchers) are the two main predictors. Thus, schools with greater average income tend to have better student performance.
+# 2. Schools with more computers per student have better student performance.
+# 3. Schools with fewer students per teacher have better student performance.
+# 
+# For more information about relative importance and the `relaimpo` package measures check out [Ulrike GrÃ¶mping's website](http://prof.beuth-hochschule.de/groemping/relaimpo/).
+# Of course this is all observational data with the usual caveats regarding causal interpretation.
+# 
+# ## Now, let's look at some weird stuff.
+# ### Q. 8.1 What are common words in Californian School names?
+# 
+# ```{r}
+# # create a vector of the words that occur in school names
+# lw <- unlist(strsplit(cas$school, split = " "))
+# 
+# # create a table of the frequency of school names
+# tlw <- table(lw)
+# 
+# # extract cells of table with count greater than 3
+# tlw2 <- tlw[tlw > 3]
+# 
+# # sorted in decreasing order
+# tlw2 <- sort(tlw2, decreasing = TRUE)
+# 
+# # values as proporitions
+# tlw2p <- round(tlw2 / nrow(cas), 3)
+# 
+# # show this in a bar graph
+# tlw2pdf <- data.frame(word = names(tlw2p), 
+# 		prop = as.numeric(tlw2p),
+# 		stringsAsFactors = FALSE)
+# ggplot(tlw2pdf, aes(word, prop)) + geom_bar() + coord_flip()
+# ```
+# 
+# ```{r}
+# # make it log counts
+# ggplot(tlw2pdf, aes(word, log(prop*nrow(cas)))) + 
+# 		geom_bar() + coord_flip()
+# ```
+# 
+# The word "Elementary" appears in almost all school names (`r round(100 * tlw2p["Elementary"], 1)`%).  The word "Union" appears in around half (`r round(100 * tlw2p["Union"], 1)`%).
+# 
+# Other common words pertain to:
+# 
+# * Directions (e.g., South, West), 
+# * Features of the environment 
+#     (e.g., Creek, Vista, View, Valley)
+# * Spanish words (e.g., rio for river; san for saint)
+# 
+# 
+# ### Q. 8.2 Is the number of letters in the school's name related to academic performance?
+# ```{r}
+# cas$namelen <- nchar(cas$school)
+# table(cas$namelen)
+# round(cor(cas$namelen, cas[,c("read", "math")]), 2)
+# ```
+# The answer appears to be "no".
+# 
+# 
+# ### Q.  8.3 Is the number of words in the school name related to academic performance?
+# ```{r}
+# cas$nameWordCount <- 
+# 		sapply(strsplit(cas$school, " "), length)
+# table(cas$nameWordCount)
+# round(cor(cas$nameWordCount, cas[,c("read", "math")]), 2)
+# ```
+# The answer appears to be "no".
+# 
+# 
+# ### Q. 8.4 Are schools with nice popular nature words in their name doing better academically?
+# ```{r}
+# tlw2p #recall the list of popular names
+# ```
+# 
+# ```{r}
+# # Create a quick and dirty list of popular nature names
+# naturenames <- c("Valley", "View", "Creek", 
+# 		"Lake", "Mountain",	"Park", "Rio", 
+# 		"Vista", "Grove", "Lakeside")
+# 
+# # work out whether the word is in the school name
+# schsplit <- strsplit(cas$school, " ")
+# cas$hasNature <- sapply(schsplit, 
+# 		function(X) length(intersect(X, naturenames)) > 0) 
+# round(cor(cas$hasNature, cas[,c("read", "math")]), 2)
+# ```
+# So we've found a small correlation.  
+# Let's graph the data to see what it means:
+# 
+# ```{r}
+# ggplot(cas, aes(hasNature, read)) + 
+#         geom_boxplot() + 
+# 		geom_jitter(position=position_jitter(width=0.1)) +
+# 		xlab("Has a nature name") +
+# 		ylab("Mean student reading score")
+# ```
+# So in the sample nature schools have slightly better reading score (and if we were to graph it, maths scores). However, the number of schools having nature names is actually somewhat small (n= `r sum(cas$hasNature)`) despite the overall quite large sample size.
+# 
+# But is it statistically significant?
+# ```{r}
+# t.read <- t.test(cas[cas$hasNature, "read"], cas[!cas$hasNature, "read"])
+# t.math <- t.test(cas[cas$hasNature, "math"], cas[!cas$hasNature, "math"])
+# ```
+# So, the p-value is less than .05 for reading (p = `r round(t.read$p.value, 3)`) but not quite for maths (p = `r round(t.math$p.value, 3)`).  Bingo!  After a little bit of data fishing we have found that reading scores are "significantly" greater for those schools with the listed nature names.
+# 
+# **But wait**: I've asked three separate exploratory questions or perhaps six if we take maths into account.
+# 
+# * $\frac{.05}{3} =$ `r 0.05 / 3`
+# * $\frac{.05}{6} =$ `r 0.05 / 6`
+# 
+# At these Bonferonni corrected p-values,  the result is non-significant. Oh well...
+# 
+# 
+# ## Review
+# Anyway, the aim of this post was not to make profound statements about California schools. Rather the aim was to show how easy it is to produce quick reproducible reports with R Markdown. If you haven't already, you may want to open up the R Markdown file used to produce this post in RStudio, and compile the report yourself.
+# 
+# In particular, I can see R Markdown being my tool of choice for:
+# 
+# * Blog posts
+# * Posts to StackExchange sites
+# * Materials for training workshops
+# * Short consulting reports, and
+# * Exploratory analyses as part of a larger project.
+# 
+# The real question is how far I can push Markdown before I start to miss the control of LaTeX.  Markdown does permit arbitrary HTML. Anyway, if you have any thoughts about the scope of R Markdown, feel free to add a comment.
+# 
+# 
+# ## Reading more complex data
+# 
+# ```{r }
+# as.numeric("30.5")
+# a <- c("
+#        IBM 08/03/1999 $10.49
+#        NCR 12/18/2002 $11.00
+#        MEC 10/23/1993 $5.00
+#        "
+# )
+# 
+# 
+# olddata_wide <- read.table(header=TRUE, text='
+#  subject sex control cond1 cond2
+#        1   M     7.9  12.3  10.7
+#        2   F     6.3  10.6  11.1
+#        3   F     9.5  13.1  13.8
+#        4   M    11.5  13.4  12.9
+# ')
+# # Mak
+# 
+
+```

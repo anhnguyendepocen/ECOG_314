@@ -136,9 +136,10 @@ Previous commands can either be retrieved from the "History" window or by:<p>
 <br>
 Enter the following at your R console and press Enter after each line of code
 
-```{r  eval=FALSE}
+```{r }
 a1 <- 1
 a2 <- 3
+a2
 a4 <- a1 + a2
 ```
 

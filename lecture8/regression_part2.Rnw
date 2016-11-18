@@ -1,20 +1,14 @@
-\documentclass[10pt]{article}
-\usepackage{amssymb, amsmath, amsthm, verbatim, layout, setspace, graphicx, float, geometry}
-\usepackage{tabularx}
-\usepackage{booktabs}
-
-\newcommand{\textnote}[1]{\textbf{\textit{#1}}}
-\newcommand{\code}[1]{\textbf{\textit{#1}}}
-\newcommand{\grad}{\nabla}
-\newcommand\inv[1]{#1\raisebox{1.15ex}{$\scriptscriptstyle-\!1$}}
-
-% ------ layout ------
-
-\begin{document}
-\title{Linear Regression: Part 2}
-\author{Jeremy Oldfather}
-\maketitle
-
+---
+title: "Charting"
+author: "Tom Allard"
+date: '2016-11-04'
+output:
+  html_document:
+    toc: no
+  github_document:
+    toc: no
+always_allow_html: yes
+---
 <<setup,echo=FALSE,message=FALSE>>=
 opts_chunk$set(fig.align="center",size="small")
 library(ggplot2)
