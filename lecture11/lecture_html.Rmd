@@ -1,0 +1,224 @@
+---
+title: "Data_Table"
+output: html_document
+---
+
+---
+title: "Data_Table"
+output: html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE, include = TRUE, comment = "Output >", warning = FALSE)
+```
+
+# Data.Table
+
+Data Table is an R package designed to make working with data easier in R. A data table is set up similarly to a data frame, the Base R method of working with data. Similarly to how we were previously able to manipulate data using the plyr and dplyr package we can also manipulate data using data.table.
+
+Data Table is designed to keep related data manipulation operations, (subset, group, update, join, etc...) together allowing for concise syntax. Unlike say, dplyr where multiple commands are strung together, data table calls include all options together. Additionally, data table is written to be much faster in terms of processing speed than regular R is. When working with large data sets this speed advantages of data table over other packages become easily palpable.
+
+__For example, create a data frame of the integers 1 through 10 million. Using the system.time function see how long it takes R to sum the data frame, save that output as df.time.__
+
+Documentation and vignettes for using the data.table package can be found on the data.table [github](https://github.com/Rdatatable/data.table/wiki/Getting-started)
+
+The data.table package has two main ways of getting data into the data table format. The fread command allows users to pass in a file path to read in data, as we have done throughout the class, or pass in a url to read data in directly from the internet. Since we have already gone over how to read in data sets in this class I will leave analysis of the fread function to you. Just know that is the data.table version of the base read.csv function.
+
+```{r cars}
+#install.packages("data.table")
+library(data.table)
+cars <- data.table(mtcars, keep.rownames = T)
+```
+
+The data.table function converts an R data frame into a data table object. as.data.table has the same effect. Here we are using the mtcars data available in base R. This data table shows selected statistics from the motor trend cars magazine.
+
+I mentioned the speed advantages of data table before. __Now create a data table of the integers 1 to 10 million and use the same process as above to calculate the speed of the summing the values. Save this value as dt.time.__ Recall the values of df.time, look at how much less time it took to sum the data table instead of the identical data frame. 
+
+Data table syntax is different from the data frame syntax we are used to working with. One of the key differences is that column names can be passed in directly as objects without having to use the $ subsetting operator.
+```{r}
+head(mtcars[, c("mpg", "disp")]) #this is using the data frame "mtcars"
+head(cars[, c("mpg", "disp")]) # this is using the data table we made, "cars" incorrectly
+head(cars[, .(mpg, disp)]) #the correct way to select the columns we want from "cars"
+```
+
+
+The subsetting commands happen between the [] of the table. There are 3 main inputs that we will work with today and I will touch upon a few of the other ones, I will also go over why I put the "mpg, disp" within parentheses.
+
+
+### Subsetting Rows
+Default data table subsetting syntax looks like this: x[i, j, by, ...]
+Here x refers to the table, i refers to the "where", j refers to the "what" and by refers to the "group by" statement some of you may be familiar with from SAS. The ... means "all other arguments." 
+
+The first command, i, is similar to the "where" subsetting we previously used with data frame objects and is in fact more or less identical in syntax to it.
+
+Let's make a table of only the cars with 6 cylinders
+
+```{r}
+Cyl6 <- cars[cyl == 6,]
+```
+
+__Ok, now you make a table with only data for cars with greater than 20 mpg and under 200 horsepower, (hint, it should have 14 rows).__
+
+The i operator can use the & and | operators like we are used to. __Make a table of cars with at least 6 cylinders and 3 or 5 gears. (hint, your table should have 17 rows)__
+
+### Subsetting Columns
+
+#### Taking columns directly
+
+The j operator in data.table syntax refers to the "what" in terms of what columns we would like to select out of a table. 
+
+```{r}
+cars[, j = mpg]
+```
+
+__Something curious happened here. We wanted to get a table with the mpg column instead we just got a vector, what happened?__
+
+The input for the j variable needs to be in the form of a list. We can do this by setting j = list(var1, var2, ...) or we can use the shorthand of j = .(var1, var2, ...).
+```{r}
+head(cars[, j = .(mpg)])
+```
+Now instead of returning a vector we got a table out. If we have multiple variables we will always get a table out. Additionally, if we do not use the list syntax with multiple variables we will get an error.
+
+```{r}
+head(cars[, j = .(mpg, cyl, gear)])
+```
+
+#### Computing columns
+
+We can also define columns within the j command directly by simply passing in our name for the new column and then defining what we want the column to be. The basic syntax is "name = formula." For example, let's say we wanted to look at the average horsepower per cylinder for all cars.
+
+```{r}
+cars[, j = .(hp, cyl, ratio = hp/cyl)]
+```
+
+__Now create a table that looks at the ratio of number of gears to miles per gallon.__ We may expect that as the number of gears increases fuel efficiency increases as well.
+
+As you can see, we can use simple operators in our j command. We can also pass in functions such as mean, sum, or even user created functions.
+
+#### Creating columns in place
+
+Ok, so now we have shown that we can select existing columns, (and save them into a new data table object), as well as calculate our own columns. Now, what if we want to add a column to our existing table or update the value of an already existing column? One additional option for the j command is the := operator. For example, let's say we want to add a binary variable looking at horsepower which will be a 1 if the hp value is greater than 150 and 0 otherwise.
+
+```{r}
+# First we create an empty column in the table, let's call it binary, and initialize it to zero
+head(cars[, binary := 0.0])
+
+## Now we can assign values of 1 to all rows with hp at or above 150
+head(cars[ hp >= 150, binary := 1])
+
+```
+
+This seems like a roundabout way of assigning a column. As I mentioned before, the j operator can also take functions. __Write a line of code that truncates the two steps above into a single one using the ifelse function.__
+
+We can also update a column that already exists. Let's say that instead we want binary to take on a single value, the string, "binary", we can use the `:=` operator again here.
+
+```{r warning = TRUE}
+head(cars[, binary := "binary"])
+```
+
+__Wait, what happened here, take a look at the warning message. Check the type of the variable binary to see what happened, what function would you use? Why did the error message we got occur?__ 
+
+So, it seems that we can't just use the `:=` operator any way we want.
+
+```{r}
+head(cars[, binary := 5])
+```
+
+This works here. __Now we can just delete the binary column by assigning it to NULL, how would you do that using data table syntax?__
+
+#### Updating Columns in Place
+
+Our table, cars, has some columns with seemingly too much precision. Let's say we don't care so much about all the decimal points in the wt column, instead of 3 we want one, and for the disp column we want no decimals. Data table allows us to update table columns in place. (I actually already demonstrated this by turning the binary column to 5 as an example of type consistency, but here you will see a somewhat more useful example).
+
+```{r warning = FALSE, error = TRUE}
+cars2 <- cars[, .(wt := round(wt, 1), disp := round(disp, 0))]
+```
+Hmm, another error. Let's see what the help says for the `:=` operator.
+[help(":=")](https://rawgit.com/wiki/Rdatatable/data.table/vignettes/datatable-reference-semantics.html)
+
+So it seems that we have 3 ways in which we can use the `:=` assignment operator. Previously, with only a single varible, we were able to use `LHS:=RHS`. Now with multiple we must use on of the other syntax options.
+
+Either:
+`DT[i, c("name1", "name2", ...) := list(formula1, formula2, ...),]`
+or
+`DT[, := (name1 = formula1, name2 = formula2, ...), ]`
+
+Notice the difference in the use of quote marks for the two options, one of them requires quotes around the names and the other does not. I prefer the second option as I find that I am better able to keep straight which columns are being assigned to which names.
+
+```{r}
+cars2 <- cars[, `:=`(wt = round(wt, 1), disp = round(disp, 0))]
+```
+
+You're probably wondering what \`:=\` means? Putting the backticks around an operator allows you to call it as a function. In fact, when you get error messages you should see that in actuality operator symbols are really shorthand for calling the function. For example \`+\` is the addition operator:
+
+```{r}
+4 + 5
+`+`(4, 5)
+```
+
+These two assignments are equal. This is why putting the backticks around the \`:=\` operator allowed us to use it above.
+
+So now we've created cars2 with rounded values in it. __Reassign cars2 to be cars with rounded mpg values and cylinder values divided by two using a single line of code.__
+
+## Mixing I and J
+
+So now we know how to subset rows and select, calculate, and update columns. The data.table syntax allows us to do both at the same time, so we can select certain columns based on corresponding row values.
+
+Here we select  the mpg, cylinders, hp, gears, and ratio of horsepower to cylinders for cars with >= 20 mpg.
+
+```{r}
+cars2 <- cars[i = mpg >= 20, j = .(mpg, cyl, hp, gear, hp_cyl = hp/cyl)]
+```
+
+__Now overwrite cars2 to be all cars with greater than 4 gears and an even number of horsepower, (hint, use the modulus operator), selecting mpg, cyl, hp, gear.__
+
+## By
+
+The by variable of the data table syntax is identical to the "group by" command of a sql query. Similar to the j variable, input to by must be given in the form of a list and takes the column names as objects instead of a strings. You must provide input to the j option of a data table query in order to use a by statement.
+
+#### Using an Aggregator function
+
+Aggregator functions look to find an aggregate value for an entire group. Functions such as sum, median, mean, mode, etc. are the most commonly used ones. In general by statements require the use of an aggregator function to make sense. 
+
+Going back to our car data, let's say we wanted to know the mean horsepower for all cars with the same number of cylinders.
+
+```{r}
+cars[, .(mean_hp = round(mean(hp),2)), by = .(cyl)]
+```
+
+So our output for this is a table that calculates the mean horsepower for each group of cars selected based on having the same value in the cylinder column.
+
+__How would you calculate the average miles per gallon of the cars based on the number of gears? Based on the number of cylinders?__
+
+__The by grouping can accept multiple columns. Calculate the mean miles per gallon based on the number of cylinders and gears.__
+
+#### Without Aggregator function
+
+If, instead of using an aggregator function in the code we just simply selected a column, what would that mean, would it make sense?
+
+```{r}
+cars[, .(hp), by = .(cyl)]
+```
+
+__Look at what we got out? Is this any different from the raw data?__
+
+### Combining Commands
+
+Data table commands can be treed off of each other. Each subsequent command acts on the data table object created by the command that came before it. For example, let's go back to our example of calculating the mean horsepower based on the number of cylinders. This time though we want the output to be sorted based on the number of cylinders. So first we need to create the table of mean values by the number of cylinders and then we need to order it. We could do this in two steps, first by saving the table of means as an object and then ordering that table, but we don't want to do that, instead we want to use only one line of code. 
+
+```{r}
+cars[, .(mean_hp = round(mean(hp),2)), by = .(cyl)][i = order(cyl)]
+```
+
+The `i =` is unnecessary, we could have just written the second command as `[order(cyl)]` and we still would have gotten the same result. Each subsequent data table command can take all the inputs of any other command and simply acts on the output created by the command preceding it. 
+
+Create a table selecting mpg, cylinders, and displacement per cylinder in a column called dpc. Then calculate the sum of dpc values for each cylinder group.
+
+```{r}
+cars[, .(mpg, cyl, dpc = disp/cyl)][, .(val = sum(dpc)), by = .(cyl)]
+```
+Wait a second, what happend to our mpg and dpc columns for the final output?
+
+__Create a table of the cylinder, gears, and hp per cylinder in a column called hpc for cars with mpg at or above 20. Then pass that table into a command which outputs a table with the mean hpc values based on the number of cylinders and gears.__
+
+## Computing on Multiple Columns

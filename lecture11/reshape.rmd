@@ -1,0 +1,113 @@
+---
+title: "Reshaping Data"
+date: "December 2, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Reshaping data, or rearranging the form of a data, is a common task that you often have to do before you can begin data analysis. It is a tedious process, but with the right tools, this step of preparing the data for analysis can be streamlined.
+
+This is a quick introduction to the **reshape2** package in R, which allows you to reshape data.
+
+Before we begin, let us load the necessary library for this tutorial.
+
+```{r reshape2}
+library(reshape2)
+```
+
+## Data Formats
+
+Depending how the data was collected, it will be arranged in either what is called a wide format or a long format.
+
+### Wide Format
+
+Most *raw* data you come across will be in the wide format, where the data for each variable is in a column.
+
+Here is an example of a wide format data. This tipping data collected by a waiter over a period of a few months working in a restaurant.
+
+```{r tips, echo=FALSE}
+head(tips)
+```
+
+### Long Format
+
+Data in the long format will have a column called variable that holds all the variable types and a column called value that holds all the values of those variables.
+
+If we were to rearrange the tipping data into a long format, it would look something like this:
+
+```{r melt tips, echo=FALSE}
+head(melt(tips, id=c("sex","smoker","day","time")))
+tail(melt(tips, id=c("sex","smoker","day","time")))
+```
+
+Notice how in the variable column, it contains the values 'total_bill' and 'size' (it also has 'tip', but not shown); and in the value column, it contains the values corresponding to those variables in the variable column.
+
+Just as you find more data collected in the wide format, you will often find that data analysis software require data to be in long format. For example, many R functions, such as lm() and plyr, require long format data for there inputs.
+
+## The **reshape2** Package
+
+The **reshape2** package is a relatively new 'reboot' of the **reshape** package mostly for speed.
+
+The author of the package likened reshaping data as if reshaping metal and appropriately named the two most important functions *melt and *cast*.
+
+One thing to note is that in **reshape2**, the *cast* function is split into two: *acast* and *dcast*. These functions operate exactly the same as the former *cast* function except that *acast* will output an array, a matrix, or a vector object and *dcast* will output a data.frame object. And because **reshape2** is relatively new, if you are Googling for tips and solutions involving reshaping data, most sites will reference **reshape** and use *cast* instead of *acast* or *dcast*. In most cases, you can simply replace *cast* with *dcast* and the code for **reshape** will work for **reshape2**.
+
+### Reshaping the *airquality* data
+
+Let us try the *melt* and *dcast* functions on some airquality data.
+
+```{r airquality}
+head(airquality)
+```
+
+You can see that the data is in wide format, as each column represents a variable of the data.
+
+#### Melting Data (Wide to Long Format)
+
+If we melt a data that is in wide format, then the data will be reshaped into long format.
+
+Let us melt the airquality data and see what happens.
+
+```{r melt aq}
+aql = melt(airquality)
+head(aql)
+```
+
+R outputs a warning about not knowing which columns to set as id variables and assumes all variables are measurements. We can inform the function that we want the month and day columns to be the id variables and the rest are measure variables.
+
+```{r melt aq set id}
+aql = melt(airquality, id=c("Month","Day"), measured=c("Ozone","Solar.R","Wind","Temp"))
+head(aql)
+```
+
+#### Casting Data (Long to Wide Format)
+
+Reshaping data from long to wide is a bit more complex.
+
+The *cast* functions use formula to describe the shape of the data. As you will see, we first have to tell *dcast* which columns in 'aql' are the id variables and which one holds the variable that would become the column header in the wide format, and finally, which column contains the values for the column header.
+
+In the case of 'aql', the 'Month' and the 'Day' columns are the id variables; the 'variable' column is the one to become the column header; and, the 'value' column would be used populate the columns. So the formula would look like this: `Month + Day ~ variable, value.var="value"`
+
+Let us try recreating the wide format of airquality from the long format 'aql' using *dcast*.
+
+```{r cast aqw}
+aqw = dcast(aql, Month + Day ~ variable, value.var = "value")
+head(aqw)
+head(airquality)
+```
+
+We can quickly reorder the columns of 'aqw' to match the original.
+
+```{r reorder aqw}
+aqw = aqw[c(3,4,5,6,1,2)]
+head(aqw)
+```
+
+Now, we have recovered the original airquality data from the long format data 'aql'.
+
+## More Information
+
+As always, check out the package help: `help(package="reshape2")`
