@@ -1,0 +1,376 @@
+---
+title: "Lecture 11, dplyr"
+date: "2016-12-02"
+output: 
+#   pdf_document:
+#     toc: yes
+#     toc_depth: 3
+#  word_document:
+#    fig_width: 5
+#    fig_height: 5
+#   fig_caption: true
+  html_document:
+    highlight: pygments
+    theme: spacelab
+    toc: yes
+header-includes: \usepackage{graphicx}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)#, comment="OUTPUT> ", background='yellow' )
+options("width"=512)
+```
+
+## Topics 
+
+In this lecture we will cover some of the main features of dplyr, a popular package for manipulating data frames. The package is Hadley Wickham's re-imagined plyr package (with underlying C++ secret sauce co-written by Romain Francois). plyr 2.0 if you will. It does less than plyr, but what it does it does more elegantly and much more quickly. 
+
+dplyr provides: 
+
+* a set of functions for efficiently manipulating data sets, and
+* a grammar of data manipulation
+
+Let's load the package.
+
+```{r load_package}
+library(dplyr)
+help(dplyr)
+```
+
+
+## Example data
+
+We will use these data sets to demonstrate the use of the dplyr tools
+```{r get_batting_data}
+library(Lahman)
+help(Lahman)
+```
+
+Each row in the Master data set represents one player
+```{r str_master}
+str(Master)
+```
+
+Each row in Batting represents one year of data for one player 
+```{r str_batting}
+str(Batting)
+```
+
+
+Each row in Batting represents one year of data for one player 
+```{r str_salaries}
+str(Salaries)
+```
+
+
+## dplyr verbs
+
+dplyr is built around 5 main functions. 
+
+Each function takes a data set as input, and returns a data set as output. Each function name is a "verb" that describes the specific action being performed on the data set 
+
+These verbs cover the most common data manipulation tasks
+
+* Select certain columns of data.
+* Filter your data to select specific rows.
+* Arrange the rows of your data into an order.
+* Mutate your data frame to contain new columns.
+* Summarize chunks of you data in some way.
+
+Let's look at how those work.
+
+
+## Verb 1: Select
+
+Include or exclude specific variables
+
+The master table has `r ncol(Master)` columns
+```{r }
+dim(Master)
+```
+
+Include only a few variables by listing their names. Do not quote the variable names.
+
+```{r select_example1}
+df <- select(Master, playerID, nameFirst, nameLast, birthYear, birthCountry, weight, height, bats, throws)
+
+dim(df)
+head(df)
+```
+
+Exclude unwanted variables using a minus sign
+```{r select_example2}
+df <- select(df, -playerID, -birthYear, -birthCountry)
+
+dim(df)
+head(df)
+```
+
+## Verb 2: Filter 
+
+Include or exclude specific observations
+
+The master table has `r nrow(Master)` rows
+```{r }
+dim(Master)
+```
+
+Include only a few rows by writing a condition. Again do not quote the variable names.
+
+```{r filter_example1}
+df <- select(Master, playerID, nameFirst, nameLast, birthYear, birthCountry, weight, height, bats, throws)
+
+dim(df)
+
+df <- filter(df, birthYear >= 1990 & bats == "L")
+
+dim(df)
+head(df)
+```
+
+
+
+## Verb 3: Arrange 
+
+Change the order of the observations
+
+The Salaries data set comes sorted by year, team, and playerID
+```{r }
+head(Salaries)
+```
+
+Sort observations in ascending order by salary and year
+```{r sort_ascending}
+df <- arrange(Salaries, salary, yearID)
+head(df)
+```
+
+
+Sort observations in descending order by salary and year
+```{r sort_desceding}
+df <- arrange(Salaries, -salary, -yearID)
+head(df)
+```
+
+
+## Verb 4:  Mutate 
+
+Add new columns to a data set. Create a new value for every row
+
+Compute one new variable: runs per game
+```{r mutate_batting}
+df <- select(Batting, playerID, yearID, R, G)
+dim(df)
+
+df <- mutate(df, RPG = R/G)
+dim(df)
+head(df)
+```
+
+
+Add several new variables
+
+* runs per game for each player
+* home runs per game
+* bases stolen per game
+
+And, change an existing variable
+
+* Make Runs negative
+```{r mutate_batting2}
+df <- select(Batting, playerID, yearID, HR, SB, R, G)
+dim(df)
+
+df <- mutate(df, 
+                 RPG  = R/G,
+                 HRPG = HR/G,
+                 SBPG = SB/G,
+                 R    = -1 * R)
+dim(df)
+head(df)
+```
+
+Notice that the change to the Runs variable took effect last, otherwise the other variables we created would have been negative.
+
+## Verb 5:  Summarise 
+
+ Create a new variable using data from multiple observations, reduce the number observations
+
+Compute average height of players
+```{r summarize1}
+df <- select(Master, height, weight)
+dim(df)
+
+df <- summarise(df, avg_height = mean(height, na.rm = TRUE))
+dim(df)
+
+print(df)
+```
+
+Compute average height (in feet) and weight of players, along with standard deviation
+```{r summarize2}
+df <- select(Master, height, weight)
+dim(df)
+
+df <- summarise(df, 
+                   avg_height = mean(height, na.rm = TRUE) / 12,
+                    sd_height = sd(height, na.rm = TRUE),
+                   avg_weight = mean(weight, na.rm = TRUE),
+                    sd_weight = sd(weight, na.rm = TRUE))
+dim(df)
+print(df)
+```
+
+
+## Pipes
+dplyr provides another innovation over plyr: the ability to chain operations together in sequence with the pipe (%>%) operator
+
+The following examples are equivalent.
+
+### Example Without pipes
+
+Repeatedly input and output a data frame for each step
+```{r dplyr_no_chain1}
+df <- select(Master, birthYear, bats, height, weight)
+df <- filter(df, birthYear >= 1990 & bats == "L")
+df <- summarise(df, avg_height = mean(height, na.rm = TRUE))
+print(df)
+```
+
+### Example With pipes
+
+The output from each step is used as the input for the next step
+```{r dplyr_with_chain1}
+Master %>% 
+    select(birthYear, bats, height, weight) %>%
+    filter(birthYear >= 1990 & bats == "L") %>%
+    summarise(avg_height = mean(height, na.rm = TRUE))
+```
+
+### Pipes explained
+
+The "." is a special object that represents the output from the prior step
+
+```{r dplyr_with_chain2}
+Master %>% 
+    select(., birthYear, bats, height, weight) %>%
+    filter(., birthYear >= 1990 & bats == "L") %>%
+    summarise(., avg_height = mean(height, na.rm = TRUE)) 
+```
+
+
+Pipes replace nested function calls -- without them this would be the only way to avoid explicitly creating a temporary data set for each step. 
+```{r dplyr_with_chain3}
+summarise( 
+          filter( 
+                 select(
+                        Master, 
+                        birthYear, bats, height, weight), 
+                 birthYear >= 1990 & bats == "L"), 
+          avg_height = mean(height, na.rm = TRUE) 
+        )
+```
+
+
+Now that we've seen how pipes work, we can use multiple "verbs" to get more useful results
+
+
+## Aggregate data
+
+*group_by* allows you to summarize data separately for subgroups of observations.
+
+Aggregate by batter type: left handed, right handed, both, and unknown hitters
+
+```{r dplyr_groupby}
+Master %>%
+  group_by(bats) %>%
+  summarise(player_count = n(),
+              avg_height = mean(height, na.rm = TRUE) / 12,
+              avg_weight = mean(weight, na.rm = TRUE))
+
+```
+
+Aggregate by year
+
+```{r dplyr_groupby2}
+Salaries %>%
+  filter(yearID >= 2000) %>%
+  group_by(yearID) %>%
+  summarize(avg_salary = mean(salary, na.rm = TRUE),
+             sd_salary = sd(salary, na.rm = TRUE),
+            lowest = min(salary),
+            highest = max(salary)) %>%
+  data.frame()
+
+```
+
+## How do I save output from a pipe?
+
+Assign it to an object 
+```{r dplyr_groupby_assign}
+df <- Master %>%
+          group_by(bats) %>%
+          summarise(player_count = n(),
+                      avg_height = mean(height, na.rm = TRUE) / 12,
+                      avg_weight = mean(weight, na.rm = TRUE)) 
+
+print(df)
+```
+
+## Joins
+
+Let's look at players born in 1990 or later and compare the salaries of left vs right-handed hitters
+
+```{r join_example}
+players <- Master %>% 
+               select(playerID, nameFirst, nameLast, birthYear, bats) %>%
+               filter(birthYear >= 1990)
+
+pay <- Salaries %>%
+           select(playerID, yearID, salary) %>%
+           mutate(salary = round(salary / 1000000, digits = 2)) %>%
+           group_by(playerID) %>%
+           summarize(avg_salary = mean(salary, na.rm= TRUE),
+                     min_salary = min(salary),
+                     max_salary = max(salary))
+               
+dim(players)
+dim(pay)           
+
+df <- left_join(players, pay, by = "playerID") 
+dim(df)
+head(df)
+
+left_join(players, pay, by = "playerID") %>%
+    group_by(bats) %>%
+    summarize(avg_high_salary = mean(max_salary, na.rm= TRUE))
+```
+
+
+## Other functions
+
+dplyr also provides a function glimpse() that makes it easy to look at our data in a transposed view. It's similar to the str() (structure) function, but has a few advantages (see ?glimpse).
+
+```{r datalook}
+glimpse(Salaries)
+```
+
+
+## Conclusion
+
+dplyr makes easier to write clear working code--which allows you to focus on the details of your data analysis.
+
+
+## For more info
+
+#### One-page cheatsheet
+
+https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf
+
+#### Explanations from creator
+http://r4ds.had.co.nz/transform.html
+
+#### Free online training
+https://www.datacamp.com/courses/dplyr-data-manipulation-r-tutorial
+
+
