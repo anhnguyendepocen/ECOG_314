@@ -1,0 +1,36 @@
+---
+title: "ECOG314 -- Summary of R commands used in chapters 1 through 11"
+filename: "Lecture9_summary_of_R_commands_used_in_chaps_1_11.rmd.rmd"
+author: "William Ampeh"
+date: "November 14, 2016"
+output: 
+#   pdf_document:
+#     toc: yes
+#     toc_depth: 3
+#  word_document:
+#    fig_width: 5
+#    fig_height: 5
+#   fig_caption: true
+  html_document:
+    highlight: pygments
+    theme: spacelab
+    toc: yes
+header-includes: \usepackage{graphicx}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, comment="OUTPUT> ", background='yellow' )
+options("width"=512)
+
+```
+
+
+# Summary of R commands 
+
+Summary of R commands can be downloaded from the following sites:
+
+ * [http://statweb.stanford.edu/~dlsun/60/Rcommands.pdf](http://statweb.stanford.edu/~dlsun/60/Rcommands.pdf)
+ 
+  * [http://www.calvin.edu/~scofield/courses/m143/materials/RcmdsFromClass.pdf](http://www.calvin.edu/~scofield/courses/m143/materials/RcmdsFromClass.pdf)
+  
+
